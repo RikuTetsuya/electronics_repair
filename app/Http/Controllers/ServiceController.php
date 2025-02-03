@@ -38,9 +38,9 @@ class ServiceController extends Controller
 
         $simpan = DB::table('master_layanans')->insert($data);
         if ($simpan) {
-            return redirect('admin/service/list')->with(['success' => 'Data Sub-Department Berhasil Disimpan']);
+            return redirect('admin/service/list')->with(['success' => 'Layanan Berhasil Disimpan']);
         } else {
-            return redirect('admin/service/list')->with(['warning' => 'Data Sub- Gagal Disimpan']);
+            return redirect('admin/service/list')->with(['warning' => 'Layanan Gagal Disimpan']);
         }
     }
 
@@ -74,9 +74,9 @@ class ServiceController extends Controller
 
         $simpan = DB::table('master_layanans')->where('id', $id)->update($data);
         if ($simpan) {
-            return redirect('admin/service/list')->with(['success' => 'Data Sub-Department Berhasil Diubah']);
+            return redirect('admin/service/list')->with(['success' => 'Layanan Berhasil Diubah']);
         } else {
-            return redirect('admin/service/list')->with(['warning' => 'Data Sub- Gagal Diubah']);
+            return redirect('admin/service/list')->with(['warning' => 'Layanan Gagal Diubah']);
         }
     }
 
@@ -89,9 +89,9 @@ class ServiceController extends Controller
     {
         $delete = DB::table('master_layanans')->where('id', $id)->delete();
         if ($delete) {
-            return Redirect::back()->with('success', 'Service Deleted');
+            return Redirect::back()->with('success', 'Layanan Dihapus');
         } else {
-            return Redirect::back()->with('warning', 'Failed to delete');
+            return Redirect::back()->with('warning', 'Layanan Gagal Dihapus');
         }
     }
 }

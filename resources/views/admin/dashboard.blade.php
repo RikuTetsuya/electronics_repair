@@ -151,7 +151,7 @@
                               <tr>
                                 <td>{{ $no++ }}</td>
                                 <td>
-                                  <p>{{ $val->nama_customer }}</p>
+                                  <p>{{ $val->name }}</p>
                                   {{-- <p>{{ $val->email }}</p>
                                   <p>{{ $val->telepon }}</p>
                                   <p>{{ $val->alamat }}</p> --}}

@@ -19,3 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('customer/midtrans-callback', [CheckoutController::class, 'callback']);
+Route::get("/tes", function(){
+    return View("customer.input.checkout");
+ });

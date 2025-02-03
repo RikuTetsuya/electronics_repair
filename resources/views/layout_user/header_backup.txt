@@ -1,0 +1,172 @@
+
+@push('usercss')
+    <style>
+      .custom-dd i {
+        min-width: 25px;
+      }
+
+      .useravatar {
+        width: 40px;
+        display: inline-block;
+        height: 40px;
+
+      }
+
+      .useravatar img {
+        width: 100%;
+        border-radius: 50%;
+
+      }
+
+      .custom-toggler {
+        border: none;
+
+      }
+
+      .customdd {
+        padding: 10px;
+        min-width: 300px;
+        transition: all 2s;
+      }
+
+      .customdd img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+
+      }
+
+      .customdd ul {
+        list-style-type: none;
+      }
+
+      .usermenu a {
+        display: flex;
+        text-decoration: none;
+        color: inherit;
+        margin-bottom: 5px;
+      }
+
+      .usermenu a:hover {
+        background-color: #f6f9fc;
+        font-weight: 500;
+
+      }
+
+      .ulicon {
+        background: #f6f9fc;
+        padding: 12px;
+        text-align: center;
+        margin-right: 10px;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        font-size: 10px;
+      }
+
+      .unlimited {
+        /* background-image: url(); */
+        min-height: 100px;
+        background-repeat: no-repeat;
+        background-position: right;
+        border-radius: 10px;
+        margin-bottom: 15px;
+      }
+
+
+    </style>
+@endpush
+
+
+<header>
+    <nav class="navbar bg-light navbar-expand-md">
+        <div class="container">
+            <button class="navbar-toggler custom-toggler" data-bs-toggle="collapse" data-bs-target="#navContent"
+                type="button">
+                <i class="fa fa-bars"></i>
+            </button>
+
+            <a href="#" class="navbar-brand">
+                <span style="font-weight: 600">IQ</span> DEV
+            </a>
+        </div>
+        <div id="navContent" class="collapse navbar-collapse">
+            <ul class="ms-auto navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a href="#" role="button" data-bs-toggle="dropdown" class="nav-link dropdown-toggle">
+                        <span class="useravatar">
+                            {{-- <img src="" class="img" alt=""> --}}
+                        </span>
+                        <span>Admin User</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end custom-dd">
+                        <div class="custom">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    {{-- <img src="" class="img" alt=""> --}}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">Matthew</h6>
+                                    <span class="mb-0 d-block text-muted">Designer</span>
+                                    <small class="mb-0 text-muted">
+                                        <i class="fa fa-envelope"></i> abcd@xyz.com
+                                    </small>
+                                </div>
+                            </div>
+
+                            <hr>
+                            <div class="usermenu">
+                                <a href="#">
+                                    <div class="ulicon">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+
+                                    <div class="ultext">
+                                        <p class="mb-0">My Profile</p>
+                                        <small>Account Settings</small>
+                                    </div>
+                                </a>
+
+                                <a href="#">
+                                    <div class="ulicon">
+                                        <i class="fa fa-inbox"></i>
+                                    </div>
+
+                                    <div class="ultext">
+                                        <p class="mb-0">My Inbox</p>
+                                        <small>Messages n Emails</small>
+                                    </div>
+                                </a>
+
+                                <a href="#">
+                                  <div class="ulicon">
+                                    <i class="fa fa-boxes"></i>
+                                  </div>
+                
+                                  <div class="ultext">
+                                    <p class="mb-0">My Task</p>
+                                    <small>To-do n Daily Task</small>
+                                  </div>
+                                </a>
+
+                            </div>
+
+                            <hr>
+
+                            <div class="bg-light unlimited p-4">
+                              <p>Unlimited Access</p>
+                              <button class="btn btn-dark">Subscribe</button>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                              <button class="btn btn-outline-primary btn-block">Logout</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </nav>
+</header>

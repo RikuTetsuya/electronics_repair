@@ -50,8 +50,16 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+
+        // Generate ID Unik
+        do {
+            $randomNumber = mt_rand(100000, 999999);  // Angka acak 6 digit
+            $uniqueId = '1010' . $randomNumber;
+        } while (DB::table('users')->where('id', $uniqueId)->exists());  // Cek apakah ID sudah ada
+
         // Menyimpan data ke tabel users
         User::create([
+            'id' => $uniqueId,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password), // Hashing password
@@ -71,7 +79,12 @@ class AuthController extends Controller
 
             else if(Auth::user()->user_type == 2)
             {
-                return redirect('customer/dashboard');
+                return redirect('customer/main');
+            }
+
+            else if(Auth::user()->user_type == 3)
+            {
+                return redirect('administrator/dashboard');
             }
         }
          
@@ -90,12 +103,12 @@ class AuthController extends Controller
 
             else if(Auth::user()->user_type == 2)
             {
-                return redirect('customer/dashboard');
+                return redirect('customer/main');
             }
 
             else if(Auth::user()->user_type == 3)
             {
-                return redirect('technician/dashboard');
+                return redirect('administrator/dashboard');
             }
 
         } else {

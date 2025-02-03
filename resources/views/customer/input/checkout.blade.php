@@ -87,7 +87,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="catatan">Catatan Perbaikan : </label>
-                                <textarea style="height: 250px" class="form-control" name="catatan" rows="3" disabled>{{ $firstReportin->catatan }}</textarea>
+                                <textarea style="height: 250px" class="form-control" name="catatan" rows="3" readonly>{{ $firstReportin->catatan }}</textarea>
                             </div>
                             {{-- <strong class="card-text">
                                 <strong>Layanan</strong> {{ $firstReportin->nama_layanan }}
@@ -104,7 +104,7 @@
                                 @endif
                             </strong> --}}
                             <br>
-                            <div class="form-group">   
+                            <div class="form-group">
                                 <label><i class="fas fa-money-bill-wave"></i> Detail Biaya <i class="fas fa-coins"></i></label>
                                 
                                 <p for="harga">Biaya Service In : Rp. {{ number_format($firstReportin->harga, 2, ',', '.') }}</p>
@@ -118,7 +118,11 @@
                             <!-- /.card-body -->
 
                             <div class="card-footer">
-                                <div><button class="btn btn-success" id="pay-button">Pay!</button></div>
+                                @if($firstReportin->status_payment === 'Paid')
+                                    <div><span class="text-success">Already Paid</span></div>
+                                @elseif($firstReportin->status_payment === 'Unpaid')
+                                    <div><button class="btn btn-success" id="pay-button">Pay!</button></div>
+                                @endif
                             </div>
                         </form>
                     </div>
@@ -141,8 +145,8 @@
         window.snap.pay('{{ $snapToken }}', {
             onSuccess: function (result) {
                 /* You may add your own implementation here */
-                alert("payment success!");
-                console.log(result);
+                // alert("payment success sekali!");
+                windows.location.href('<?php URL('/api/tes')?>');
             },
             onPending: function (result) {
                 /* You may add your own implementation here */

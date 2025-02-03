@@ -41,16 +41,24 @@
                 @csrf
                 <div class="card-body">
                   <div class="form-group">
-                    <label for="service_in_id">-- Pilih Data Service In --</label>
+                    <label for="service_in_id">Pilih Data Service In</label>
                     <select name="service_in_id" class="form-control select2">
                       @foreach($reportouts as $val)
+                          <option disabled>-- Pilih Data --</option>
                           <option value="{{ $val->id }}">{{ $val->deskripsi_masalah }} - {{ $val->nama_layanan }}</option>
                       @endforeach
                     </select>
                   </div>
                   <div class="form-group">
-                    <label for="vendor_name">Nama Vendor</label>
-                    <input type="text" class="form-control" name="vendor_name" value="{{ old('vendor_name') }}">
+                    <label for="mitra_id">Nama Vendor</label>
+                    {{-- <input type="text" class="form-control" name="mitra_id" value="{{ old('mitra_id') }}"> --}}
+                    <select name="mitra_id" class="form-control select2">
+                      @foreach($mitras as $val)
+                          <option value="{{ $val->mitra_id }}">
+                            {{ $val->nama_mitra }} - {{ $val->alamat }}
+                          </option>
+                      @endforeach
+                    </select>
                   </div>
                   <div class="form-group">
                     <label for="tanggal_keluar">Tanggal Keluar</label>
