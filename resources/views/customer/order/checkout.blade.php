@@ -165,6 +165,12 @@
                             @csrf
                             @method('GET')
 
+                            @if (request()->route('id') !== $firstReportin->order_id)
+                                <div><span class="text-danger">
+                                    Make sure you pay the previous order before making another payment 😁
+                                </span></div>
+                            @endif
+                            <br>
                             @if ($firstReportin->status_payment === 'Paid')
                                 <div><span class="text-success">Already Paid 😁</span></div>
                                 <br>
@@ -196,13 +202,20 @@
                                     <a href="{{ url('customer/order/') }}" class="btn btn-xs btn-danger">
                                         <i class="far fa-times-circle"></i> Back
                                     </a>
-                                    <button class="btn btn-success" id="pay-button">
-                                        <i class="fas fa-hand-holding-usd"></i> Pay!
-                                    </button>
+                                    @if (request()->route('id') !== $firstReportin->order_id)
+                                        <button class="btn btn-success" id="pay-button" disabled>
+                                            <i class="fas fa-hand-holding-usd"></i> Pay!
+                                        </button>
+                                    @else
+                                        <button class="btn btn-success" id="pay-button">
+                                            <i class="fas fa-hand-holding-usd"></i> Pay!
+                                        </button>
+                                    @endif
+
                                     <a href="{{ url('customer/invoice/' . $firstReportin->id) }}" target="_blank"
                                         class="btn btn-warning" id="invoice-button">
                                         <i class="fas fa-file-invoice-dollar"></i> e-Invoice
-                                    </a>  
+                                    </a>
                                 </div>
                                 <br>
                             @endif

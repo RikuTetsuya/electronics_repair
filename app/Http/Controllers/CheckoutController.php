@@ -16,6 +16,7 @@ class CheckoutController extends Controller
 
         $request->request->add(['total_harga' => $request->total_harga * 1, 'status' => "Unpaid"]);
         // $order = Order::create($request->all());
+        // $orderId = $request->order_id; // Ambil order_id yang dipilih dari request
 
         $reportins = DB::table('service_ins')
             ->join('users', 'service_ins.user_id', '=', 'users.id')
@@ -48,7 +49,9 @@ class CheckoutController extends Controller
                 'master_layanans.nama_layanan',
                 DB::raw('COALESCE(service_ins.harga, 0) + COALESCE(service_outs.biaya, 0) as total_biaya')
             )
-            ->orderBy('service_ins.tanggal_masuk', 'desc') // Mengurutkan berdasarkan tanggal masuk terbaru
+            // ->orderBy('service_ins.tanggal_masuk', 'desc') // Mengurutkan berdasarkan tanggal masuk terbaru
+            // ->where('service_ins.order_id', $orderId) // Hanya ambil data berdasarkan order_id yang dipilih
+            ->orderBy('service_ins.tanggal_masuk', 'asc') // Urutkan berdasarkan tanggal masuk terbaru        
             ->get();
 
         $firstReportin = $reportins->first();
@@ -103,8 +106,8 @@ class CheckoutController extends Controller
                 // $order = Order::find($request->order_id);
                 // $order->update(['status_payment' => 'Paid']);
                 DB::table('service_ins')
-                ->where('order_id', $request->order_id)
-                ->update(['status_payment' => 'Paid']);
+                    ->where('order_id', $request->order_id)
+                    ->update(['status_payment' => 'Paid']);
             }
         }
     }
@@ -157,17 +160,13 @@ class CheckoutController extends Controller
         return view('customer.order.invoice', compact('invoice'));
     }
 
-    public function details(Request $request)
+    public function details(Request $request, $id)
     {
-
-        $request->request->add(['total_harga' => $request->total_harga * 1, 'status' => "Unpaid"]);
-        // $order = Order::create($request->all());
-
         $reportins = DB::table('service_ins')
             ->join('users', 'service_ins.user_id', '=', 'users.id')
             ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
             ->leftJoin('service_outs', 'service_ins.id', '=', 'service_outs.service_in_id')
-            ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id') // Join ke master_mitras
+            ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id')
             ->select(
                 'service_ins.id',
                 'service_ins.order_id',
@@ -176,7 +175,7 @@ class CheckoutController extends Controller
                 'users.telepon',
                 'users.alamat',
                 'master_layanans.nama_layanan',
-                'master_mitras.nama_mitra', // Kolom dari master_mitras
+                'master_mitras.nama_mitra',
                 'service_ins.tanggal_masuk',
                 'service_ins.deskripsi_masalah',
                 'service_ins.status',
@@ -186,7 +185,6 @@ class CheckoutController extends Controller
                 'service_ins.harga',
                 'service_ins.total_harga',
                 'service_ins.catatan',
-                // 'service_outs.vendor_name',
                 'service_outs.tanggal_keluar',
                 'service_outs.tanggal_diterima',
                 'service_outs.biaya',
@@ -194,11 +192,14 @@ class CheckoutController extends Controller
                 'master_layanans.nama_layanan',
                 DB::raw('COALESCE(service_ins.harga, 0) + COALESCE(service_outs.biaya, 0) as total_biaya')
             )
-            ->orderBy('service_ins.order_id') // Mengurutkan berdasarkan tanggal masuk terbaru
-            // ->where('service_ins.order_id', $request->order_id)
+            ->where('service_ins.order_id', $id) // Tambahkan filter berdasarkan order_id dari URL
             ->first();
 
-        // $firstReportin = $reportins->first();
-        return view('customer.order.detail', compact( 'reportins'));
+        if (!$reportins) {
+            // Jika tidak ditemukan data, tampilkan halaman 404 atau pesan error
+            abort(404, 'Order not found');
+        }
+
+        return view('customer.order.detail', compact('reportins'));
     }
 }

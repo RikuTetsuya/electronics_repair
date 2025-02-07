@@ -65,6 +65,23 @@
                                             @enderror
                                         </div>
 
+                                        <div class="form-group">
+                                            <label for="telepon">Phone Number</label>
+                                            <input type="telepon" class="form-control" id="telepon" name="telepon"
+                                                value="{{ old('telepon', Auth::user()->telepon) }}" required>
+                                            @error('telepon')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="alamat">Address</label>
+                                            <textarea class="form-control" id="alamat" name="alamat" rows="3" required>{{ old('alamat', Auth::user()->alamat) }}</textarea>
+                                            @error('alamat')
+                                                <small class="text-danger">{{ $message }}</small>
+                                            @enderror
+                                        </div>
+
                                         <div class="form-group text-right">
                                             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>
                                                 Confirm Update</button>

@@ -18,23 +18,25 @@ class CustomerInputController extends Controller
      * Display a listing of the resource.
      */
 
+
+
     public function main()
     {
         $user = Auth::user();  // Dapatkan data pengguna yang sedang login
-    
-    // Pagination untuk layanans
-    $layanans = DB::table('master_layanans')
-        ->select('nama_layanan')
-        ->where('status', 1)
-        ->paginate(8); // 8 item per halaman
 
-    // Tetap gunakan query untuk ratings
-    $ratings = DB::table('master_ratings')
-        ->join('users', 'master_ratings.user_id', '=', 'users.id')
-        ->select('master_ratings.*', 'users.name as user_name', 'users.image as image')
-        ->get();
+        // Pagination untuk layanans
+        $layanans = DB::table('master_layanans')
+            ->select('nama_layanan')
+            ->where('status', 1)
+            ->paginate(8); // 8 item per halaman
 
-    return view('customer.main', compact('ratings', 'layanans', 'user'));
+        // Tetap gunakan query untuk ratings
+        $ratings = DB::table('master_ratings')
+            ->join('users', 'master_ratings.user_id', '=', 'users.id')
+            ->select('master_ratings.*', 'users.name as user_name', 'users.image as image')
+            ->get();
+
+        return view('customer.main', compact('ratings', 'layanans', 'user'));
     }
 
     public function storeRating(Request $request)
@@ -132,14 +134,18 @@ class CustomerInputController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
+            'telepon' => 'required|numeric', // Menggunakan 'numeric' untuk memvalidasi angka
+            'alamat' => 'required|string|max:1000',
             // 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi file gambar
         ]);
 
         $user = User::find(Auth::id()); // Ambil pengguna yang sedang login
 
-        // Mengupdate informasi nama dan email
+        // Mengupdate informasi nama, email, telepon, dan alamat
         $user->name = $request->input('name');
         $user->email = $request->input('email');
+        $user->telepon = $request->input('telepon'); // Tambahkan baris untuk menyimpan nomor telepon
+        $user->alamat = $request->input('alamat');  // Tambahkan baris untuk menyimpan alamat
 
         // Jika ada gambar yang diupload, proses upload dan simpan nama file ke database
         // if ($request->hasFile('image')) {
@@ -272,7 +278,7 @@ class CustomerInputController extends Controller
                 'master_ratings.id',
                 'users.name',
             )
-            ->get(); 
+            ->get();
         $user = Auth::user();
         $layanans = DB::table('master_layanans')->where('status', '!=', 0)->get(); // Ambil data layanan yang tidak berstatus 2
 

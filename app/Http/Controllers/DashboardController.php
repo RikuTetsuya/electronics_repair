@@ -78,7 +78,7 @@ class DashboardController extends Controller
         else if(Auth::user()->user_type == 3) // Customer
         {
             // Mengambil jumlah customer
-            // $jumlahCustomer = DB::table('users')->count();
+            $jumlahCustomer = DB::table('users')->count();
 
             // Mengambil jumlah service in
             $jumlahServiceIn = DB::table('service_ins')->count();
@@ -99,6 +99,7 @@ class DashboardController extends Controller
                 ->join('users', 'service_ins.user_id', '=', 'users.id')
                 ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
                 ->leftJoin('service_outs', 'service_ins.id', '=', 'service_outs.service_in_id')
+                ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id') // Join ke master_mitras
                 ->select(
                     'service_ins.id', 
                     'users.name',
@@ -106,6 +107,7 @@ class DashboardController extends Controller
                     'users.telepon',
                     'users.alamat',
                     'master_layanans.nama_layanan',
+                    'master_mitras.nama_mitra', // Kolom dari master_mitrasx
                     'service_ins.tanggal_masuk',
                     'service_ins.deskripsi_masalah',
                     'service_ins.status',
@@ -113,7 +115,6 @@ class DashboardController extends Controller
                     'service_ins.perbaikan_pihak_ketiga',
                     'service_ins.harga',
                     'service_ins.catatan',
-                    'service_outs.vendor_name',
                     'service_outs.tanggal_keluar',
                     'service_outs.tanggal_diterima',
                     'service_outs.biaya',
@@ -123,7 +124,7 @@ class DashboardController extends Controller
                 ->orderBy('service_ins.tanggal_masuk', 'desc') // Mengurutkan berdasarkan tanggal masuk terbaru
                 ->get();
 
-            return view('administrator.dashboard', compact(
+            return view('admin.dashboard', compact(
                 'jumlahCustomer', 
                 'jumlahServiceIn', 
                 'jumlahServiceOut', 

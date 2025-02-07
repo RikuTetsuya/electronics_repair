@@ -64,11 +64,26 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password), // Hashing password
             'user_type' => 2, // User type 1
+            'telepon' => $request->telepon ?? '', // Tambahkan ini
         ]);
 
         return redirect('login')->with('success', 'User added successfully.');
     }
     
+    public function landing() {
+        $layanans = DB::table('master_layanans')
+        ->select('nama_layanan')
+        ->where('status', 1)
+        ->paginate(8); // 8 item per halaman
+
+        $ratings = DB::table('master_ratings')
+        ->join('users', 'master_ratings.user_id', '=', 'users.id')
+        ->select('master_ratings.*', 'users.name as user_name', 'users.image as image')
+        ->get();
+
+        return view('customer.landing', compact('layanans', 'ratings'));
+     }
+     
     public function login() {
         // dd(Hash::make('123'));
         if(!empty(Auth::check())){

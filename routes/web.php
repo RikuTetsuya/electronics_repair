@@ -29,7 +29,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 */
 
 // Route::get('/sample', [SampleController::class, 'index']);
-
+Route::get('/', [AuthController::class, 'landing']);
 Route::get('/login', [AuthController::class, 'login']);
 Route::post('login', [AuthController::class, 'AuthLogin']);
 
