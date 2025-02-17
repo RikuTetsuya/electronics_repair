@@ -66,17 +66,24 @@ class MitraController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Validasi input (opsional, tapi disarankan)
+        $request->validate([
+            'nama_mitra' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+        ]);
+    
         $data = [
             'nama_mitra' => $request->nama_mitra,
             'alamat' => $request->alamat,
-            // 'status' => $request->status,
         ];
-
-        $simpan = DB::table('master_mitras')->update($data);
+    
+        // Pastikan update hanya terjadi pada data dengan ID yang sesuai
+        $simpan = DB::table('master_mitras')->where('id', $id)->update($data);
+    
         if ($simpan) {
             return redirect('admin/mitra/list')->with(['success' => 'Mitra Berhasil Diubah']);
         } else {
-            return redirect('admin/mitra/list')->with(['warning' => 'Mitra Gagal Diubah']);
+            return redirect('admin/mitra/list')->with(['warning' => 'Tidak ada perubahan data']);
         }
     }
 

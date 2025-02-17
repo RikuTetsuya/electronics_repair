@@ -34,7 +34,7 @@
                    </div>  
                    <div clas s="form-group">
                     <label>Alamat</label>
-                    <textarea type="text" class="form-control" style="height: 250px" name="alamat" value="{{ $mitra->alamat }}" required placeholder="Alamat"></textarea>
+                    <textarea type="text" class="form-control" style="height: 250px" name="alamat" required placeholder="Alamat">{{ $mitra->alamat }}</textarea>
                    </div>
                 </div>
                 <!-- /.card-body -->

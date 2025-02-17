@@ -50,7 +50,8 @@
                                         <div class="form-group">
                                             <label for="name">Full Name</label>
                                             <input type="text" class="form-control" id="name" name="name"
-                                                value="{{ old('name', Auth::user()->name) }}" required>
+                                                {{-- value="{{ old('name', Auth::user()->name) }}" required> --}}
+                                                value="{{ Auth::user()->name }}" required>
                                             @error('name')
                                                 <small class="text-danger">{{ $message }}</small>
                                             @enderror
@@ -59,7 +60,8 @@
                                         <div class="form-group">
                                             <label for="email">Email Address</label>
                                             <input type="email" class="form-control" id="email" name="email"
-                                                value="{{ old('email', Auth::user()->email) }}" required>
+                                                {{-- value="{{ old('email', Auth::user()->email) }}" required> --}}
+                                                value="{{ Auth::user()->email }}" required>
                                             @error('email')
                                                 <small class="text-danger">{{ $message }}</small>
                                             @enderror
@@ -68,7 +70,8 @@
                                         <div class="form-group">
                                             <label for="telepon">Phone Number</label>
                                             <input type="telepon" class="form-control" id="telepon" name="telepon"
-                                                value="{{ old('telepon', Auth::user()->telepon) }}" required>
+                                                {{-- value="{{ old('telepon', Auth::user()->telepon) }}" required> --}}
+                                                value="{{ Auth::user()->telepon }}" required>
                                             @error('telepon')
                                                 <small class="text-danger">{{ $message }}</small>
                                             @enderror

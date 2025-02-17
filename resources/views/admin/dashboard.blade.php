@@ -28,7 +28,7 @@
                     <p>Total Services</p>
                 </div>
                 <div class="icon">
-                    <i class="ion ion-briefcase"></i>
+                    <i class="fas fa-tools"></i>
                 </div>
                 <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
@@ -134,7 +134,7 @@
                               <th>Layanan/Tanggal Laporan</th>
                               {{-- <th>Keluhan Customer</th> --}}
                               <th>Status</th>
-                              <th>Estimasi Selesai</th>
+                              {{-- <th>Estimasi Selesai</th> --}}
                               {{-- <th>Catatan Perbaikan</th> --}}
                               <th>Harga</th>
                               <th>Perbaikan 3rd Party</th>
@@ -174,17 +174,17 @@
                                       <span class="badge badge-success">Finished</span>
                                   @endif
                                 </td>
-                                <td>
+                                {{-- <td>
                                   @if ($val->tanggal_estimasi)
                                   {{ \Carbon\Carbon::parse($val->tanggal_estimasi)->translatedFormat('d-F-Y') }}
                                   @else
                                     -
                                   @endif
-                                </td>
+                                </td> --}}
                                 {{-- <td>{{ $val->catatan }}</td> --}}
                                 <td>
                                   @if (is_null($val->harga) || $val->harga === '')
-                                    <p>(not counted yet...)</p>
+                                    <p>(ain't counted yet...)</p>
                                   @else
                                     Rp. {{ number_format($val->harga, 2, ',', '.') }}
                                   @endif
@@ -203,9 +203,8 @@
                                     @elseif ($val->perbaikan_pihak_ketiga == 1)
                                         <p><strong>Nama Vendor:</strong> <br> {{ $val->vendor_name ?? 'N/A' }}</p>
                                         <p><strong>Biaya:</strong> <br> {{ $val->biaya ? 'Rp. '.number_format($val->biaya, 2, ',', '.') : 'N/A' }}</p>
-                                        {{-- <p><strong>Catatan:</strong> <br> {{ $val->catatan_service_out ?? 'N/A' }}</p> --}}
-                                    @elseif ($val->perbaikan_pihak_ketiga == 2)
-                                        <p> (Tidak memerlukan perbaikan pihak ketiga...)</p>
+                                    {{-- @elseif ($val->perbaikan_pihak_ketiga == 2)
+                                        <p> (Tidak memerlukan perbaikan pihak ketiga...)</p> --}}
                                     @endif
                                 </td>
                                 <td>
@@ -213,7 +212,7 @@
                                 </td>
                                 <td>
                                     @if ($val->status == 4)
-                                        <a href="#" class="btn btn-xs btn-success" title="Make Invoice">Buat Invoice <i class="fas fa-file-invoice-dollar"></i></a>
+                                        <a href="#" class="btn btn-xs btn-success" title="Make Invoice">Buat Invoice <br><i class="fas fa-file-invoice-dollar"></i></a>
                                     @else
                                       <span class="badge badge-danger">Unfinished Order</span>
                                     @endif

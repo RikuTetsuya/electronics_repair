@@ -81,8 +81,8 @@ class ServiceOutController extends Controller
         $usedServiceInIds = DB::table('service_outs')->pluck('service_in_id')->toArray();
         // Ambil data mitra dari tabel master_mitras
         $mitras = DB::table('master_mitras')
-        ->select('id as mitra_id', 'nama_mitra', 'alamat') // Ambil ID, nama mitra, dan alamat
-        ->get();
+            ->select('id as mitra_id', 'nama_mitra', 'alamat') // Ambil ID, nama mitra, dan alamat
+            ->get();
         // Ambil service_ins yang perbaikan_pihak_ketiga = 1 dan status = 3, tetapi tidak ada di service_outs
         $reportouts = DB::table('service_ins')
             ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id') // Join ke tabel master_layanans
@@ -105,31 +105,26 @@ class ServiceOutController extends Controller
         $request->validate([
             'service_in_id' => 'required|integer|exists:service_ins,id',
             'mitra_id' => 'required',
-            'tanggal_keluar' => 'required|date',
             'tanggal_diterima' => 'nullable|date',
             'biaya' => 'nullable|numeric',
             'catatan' => 'nullable|string',
             'status' => 'required|integer|in:0,1,2',
         ]);
 
-        // Ambil tanggal_masuk dari service_ins untuk perbandingan
+        // Ambil data service_in yang terkait
         $serviceIn = DB::table('service_ins')->where('id', $request->input('service_in_id'))->first();
-        $tanggalMasuk = \Carbon\Carbon::parse($serviceIn->tanggal_masuk);
-
-        // Ambil tanggal_diterima dari input user (jika ada)
-        $tanggalDiterima = $request->input('tanggal_diterima') ? \Carbon\Carbon::parse($request->input('tanggal_diterima')) : null;
-
-        // Periksa apakah tanggal_diterima kurang dari atau sama dengan tanggal_masuk
-        if ($tanggalDiterima && $tanggalDiterima->lte($tanggalMasuk)) {
-            // Jika tanggal diterima <= tanggal masuk, redirect back dengan error
-            return redirect()->back()->withErrors(['tanggal_diterima' => 'Tanggal kembali harus minimal sehari setelah tanggal keluar.']);
+        if (!$serviceIn) {
+            return redirect()->back()->withErrors(['error' => 'Data Service In tidak ditemukan']);
         }
 
-        // Insert data baru ke database
+        // Ambil tanggal_diterima dari input user
+        $tanggalDiterima = $request->input('tanggal_diterima') ? \Carbon\Carbon::parse($request->input('tanggal_diterima')) : null;
+
+        // Insert data baru ke service_outs
         DB::table('service_outs')->insert([
             'service_in_id' => $request->input('service_in_id'),
             'mitra_id' => $request->mitra_id,
-            'tanggal_keluar' => $request->input('tanggal_keluar'),
+            'tanggal_keluar' => now(),
             'tanggal_diterima' => $request->input('tanggal_diterima'),
             'biaya' => $request->input('biaya'),
             'catatan' => $request->input('catatan'),
@@ -138,9 +133,18 @@ class ServiceOutController extends Controller
             'updated_at' => now(),
         ]);
 
-        DB::table('service_ins')->insert([
-            'mitra_id' => $request->mitra_id,
-        ]);
+        // Hitung total_harga baru
+        $harga = (float) $serviceIn->harga;
+        $biaya = (float) $request->input('biaya');
+        $totalHarga = $harga + $biaya;
+
+        // Update total_harga di service_ins
+        DB::table('service_ins')
+            ->where('id', $request->input('service_in_id'))
+            ->update([
+                'total_harga' => $totalHarga,
+                'updated_at' => now(),
+            ]);
 
         // Redirect dengan pesan sukses
         return redirect('admin/service_out/list')->with('success', 'Service Out successfully added.');
@@ -157,23 +161,45 @@ class ServiceOutController extends Controller
      */
     public function edit(string $id)
     {
-        $reportouts = DB::table('service_outs')
-            ->join('service_ins', 'service_outs.service_in_id', '=', 'service_ins.id')
+        $reportouts = DB::table('service_ins')
+            ->join('users', 'service_ins.user_id', '=', 'users.id')
+            ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
+            ->leftJoin('service_outs', 'service_ins.id', '=', 'service_outs.service_in_id') // Join ke service_outs
+            ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id') // Join ke master_mitras
             ->select(
-                'service_outs.id',
+                'service_ins.order_id',
+                'users.name',
+                'users.email',
+                'users.telepon',
+                'users.alamat',
+                'master_layanans.nama_layanan',
+                'master_mitras.nama_mitra', // Kolom dari master_mitras
+                'service_ins.id',
+                'service_ins.tanggal_masuk',
                 'service_ins.deskripsi_masalah',
-                'service_outs.vendor_name',
+                'service_ins.status',
+                'service_ins.status_payment',
+                'service_ins.tanggal_estimasi',
+                'service_ins.perbaikan_pihak_ketiga',
+                'service_ins.harga',
+                'service_ins.catatan',
+                'service_outs.mitra_id',
                 'service_outs.tanggal_keluar',
                 'service_outs.tanggal_diterima',
+                'service_outs.status as status_souts',
                 'service_outs.biaya',
-                'service_outs.catatan',
-                'service_outs.status',
+                'service_outs.catatan as catatan_service_out',
+                'service_outs.status as status_service_out',
+                DB::raw('COALESCE(service_ins.harga, 0) + COALESCE(service_outs.biaya, 0) as total_biaya') // Hitung total biaya
             )
             ->where('service_outs.id', $id) // Tambahkan baris ini untuk memfilter berdasarkan ID
             ->first();
+        $mitras = DB::table('master_mitras')
+            ->select('id as mitra_id', 'nama_mitra', 'alamat') // Ambil ID, nama mitra, dan alamat
+            ->get();
 
         $desc = DB::table('service_ins')->get();
-        return view('admin.reportouts.edit', compact('reportouts'));
+        return view('admin.reportouts.edit', compact('reportouts', 'mitras'));
     }
 
     /**
@@ -183,40 +209,61 @@ class ServiceOutController extends Controller
     {
         // Validasi input
         $request->validate([
-            'vendor_name' => 'string',
+            'mitra_id' => 'required',
             'tanggal_diterima' => 'nullable|date',
-            'biaya' => 'nullable|string',
+            'biaya' => 'nullable|numeric',
+            'catatan' => 'nullable|string',
             'status' => 'required|integer|in:0,1,2',
         ]);
 
-        // Ambil tanggal_keluar dari database untuk perbandingan
+        // Ambil data service_out yang akan diupdate
         $serviceOut = DB::table('service_outs')->where('id', $id)->first();
-        $tanggalKeluar = \Carbon\Carbon::parse($serviceOut->tanggal_keluar);
+        if (!$serviceOut) {
+            return redirect()->back()->withErrors(['error' => 'Data Service Out tidak ditemukan']);
+        }
+
+        // Ambil data service_in yang terkait
+        $serviceIn = DB::table('service_ins')->where('id', $serviceOut->service_in_id)->first();
+        if (!$serviceIn) {
+            return redirect()->back()->withErrors(['error' => 'Data Service In tidak ditemukan']);
+        }
 
         // Ambil tanggal_diterima dari input user
         $tanggalDiterima = $request->input('tanggal_diterima') ? \Carbon\Carbon::parse($request->input('tanggal_diterima')) : null;
 
         // Jika tanggal diterima diisi, lakukan pengecekan dengan tanggal keluar
-        if ($tanggalDiterima && $tanggalDiterima->lt($tanggalKeluar)) {
-            // Jika tanggal diterima kurang dari tanggal keluar, redirect back dengan error
-            return redirect()->back()->withErrors(['tanggal_diterima' => 'Tanggal diterima tidak boleh kurang dari tanggal keluar']);
+        if ($tanggalDiterima && $tanggalDiterima->lt($serviceOut->tanggal_keluar)) {
+            return redirect()->back()->withErrors(['tanggal_diterima' => 'Tanggal diterima tidak boleh sama atau kurang dari tanggal keluar']);
         }
 
-        // Update data di database menggunakan Query Builder
+        // Update data service_outs
         DB::table('service_outs')
             ->where('id', $id)
             ->update([
-                'vendor_name' => $request->input('vendor_name'),
-                'tanggal_diterima' => $request->input('tanggal_diterima'), // Update jika valid
+                'mitra_id' => $request->mitra_id,
+                'tanggal_diterima' => $request->input('tanggal_diterima'),
                 'biaya' => $request->input('biaya'),
                 'catatan' => $request->input('catatan'),
                 'status' => $request->input('status'),
-                'updated_at' => now(), // Update timestamp
+                'updated_at' => now(),
+            ]);
+
+        // Hitung total_harga baru
+        $harga = (float) $serviceIn->harga;
+        $biaya = (float) $request->input('biaya');
+        $totalHarga = $harga + $biaya;
+
+        // Update total_harga di service_ins
+        DB::table('service_ins')
+            ->where('id', $serviceOut->service_in_id)
+            ->update([
+                'total_harga' => $totalHarga,
+                'updated_at' => now(),
             ]);
 
         // Redirect ke halaman list dengan pesan sukses
         return redirect('admin/service_out/list')
-            ->with('success', 'Service status and estimated date updated successfully.');
+            ->with('success', 'Service Out updated successfully.');
     }
 
 

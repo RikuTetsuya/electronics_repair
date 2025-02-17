@@ -87,7 +87,7 @@ class AuthController extends Controller
     public function login() {
         // dd(Hash::make('123'));
         if(!empty(Auth::check())){
-            if(Auth::user()->user_type == 1)
+            if(Auth::user()->user_type == 1 || Auth::user()->user_type == 3)
             {
                 return redirect('admin/dashboard');
             }
@@ -97,39 +97,59 @@ class AuthController extends Controller
                 return redirect('customer/main');
             }
 
-            else if(Auth::user()->user_type == 3)
-            {
-                return redirect('administrator/dashboard');
-            }
+            // else if(Auth::user()->user_type == 3)
+            // {
+            //     return redirect('administrator/dashboard');
+            // }
         }
          
         return view('auth.login');
     }
  
+    // public function AuthLogin(Request $request) {
+    //     // dd($request->all());
+    //     $remember = !empty($request) ? true : false;
+    //     if(Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)){
+            
+    //         if(Auth::user()->user_type == 1 || Auth::user()->user_type == 3)
+    //         {
+    //             return redirect('admin/dashboard');
+    //         }
+
+    //         else if(Auth::user()->user_type == 2)
+    //         {
+    //             return redirect('customer/main');
+    //         }
+
+    //         // else if(Auth::user()->user_type == 3)
+    //         // {
+    //         //     return redirect('admin/dashboard');
+    //         // }
+
+    //     } else {
+
+    //         return redirect()->back()->with('error', 'Please enter the right email and password');
+        
+    //     }
+    // }
+
     public function AuthLogin(Request $request) {
         // dd($request->all());
-        $remember = !empty($request) ? true : false;
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)){
+        $remember = !empty($request->remember) ? true : false;
+    
+        // Cek apakah pengguna ada dan is_delete = 0
+        $user = User::where('email', $request->email)->first();
+    
+        if ($user && $user->is_delete == 0 && Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember)) {
             
-            if(Auth::user()->user_type == 1)
-            {
+            if(Auth::user()->user_type == 1 || Auth::user()->user_type == 3) {
                 return redirect('admin/dashboard');
-            }
-
-            else if(Auth::user()->user_type == 2)
-            {
+            } else if(Auth::user()->user_type == 2) {
                 return redirect('customer/main');
             }
-
-            else if(Auth::user()->user_type == 3)
-            {
-                return redirect('administrator/dashboard');
-            }
-
+    
         } else {
-
-            return redirect()->back()->with('error', 'Please enter the right email and password');
-        
+            return redirect()->back()->with('error', 'Please enter the right email and password or your account has been banned');
         }
     }
 
@@ -178,6 +198,6 @@ class AuthController extends Controller
 
     public function logout() {
         Auth::logout();
-        return redirect('/login');
+        return redirect('/');
     }   
 }

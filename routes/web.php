@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\MitraController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FaqsController;
 use Illuminate\Support\Facades\Route;
+// use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
@@ -33,6 +35,7 @@ Route::get('/', [AuthController::class, 'landing']);
 Route::get('/login', [AuthController::class, 'login']);
 Route::post('login', [AuthController::class, 'AuthLogin']);
 
+// Auth::routes(['verify' => true]);
 Route::get('signup/panel/admin/ohdegwihdTYDFYWdggiUWguGgeugdgu', [AuthController::class, 'adminRegister']);
 Route::post('signup/panel/admin/insert', [AuthController::class, 'adminRegisterStore']);
 
@@ -85,13 +88,21 @@ Route::group(['middleware' => 'admin'], function () {
     Route::post('admin/mitra/update/{id}', [MitraController::class, 'update']);
     Route::post('/delete_mitra/{id}', [MitraController::class, 'destroy']);
 
-    // mitra list
-    Route::get('admin/faq/list', [FaqsController::class, 'index']);
-    Route::get('admin/faq/add', [FaqsController::class, 'create']);
-    Route::post('admin/faq/insert', [FaqsController::class, 'store']);
-    Route::get('admin/faq/edit/{id}', [FaqsController::class, 'edit']);
-    Route::post('admin/faq/update/{id}', [FaqsController::class, 'update']);
-    Route::post('/delete_faq/{id}', [FaqsController::class, 'destroy']);
+    // faqs list
+    Route::get('admin/faqs/list', [FaqsController::class, 'index']);
+    Route::get('admin/faqs/add', [FaqsController::class, 'create']);
+    Route::post('admin/faqs/insert', [FaqsController::class, 'store']);
+    Route::get('admin/faqs/edit/{id}', [FaqsController::class, 'edit']);
+    Route::post('admin/faqs/update/{id}', [FaqsController::class, 'update']);
+    Route::post('/delete_faqs/{id}', [FaqsController::class, 'destroy']);
+
+    // faqs list
+    Route::get('admin/employee/list', [EmployeeController::class, 'index']);
+    Route::get('admin/employee/add', [EmployeeController::class, 'create']);
+    Route::post('admin/employee/insert', [EmployeeController::class, 'store']);
+    Route::get('admin/employee/edit/{id}', [EmployeeController::class, 'edit']);
+    Route::post('admin/employee/update/{id}', [EmployeeController::class, 'update']);
+    Route::post('/delete_employee/{id}', [EmployeeController::class, 'destroy']);
 
     // report in list
     Route::get('admin/service_in/list', [ServiceInController::class, 'index']);
@@ -117,7 +128,7 @@ Route::group(['middleware' => 'admin'], function () {
 });
 
 Route::group(['middleware' => 'customer'], function () {
-    Route::get('customer/main/', [CustomerInputController::class, 'main']);
+    Route::get('customer/main/', [CustomerInputController::class, 'main'])->middleware('verified');
     Route::post('customer/main/rating/store', [CustomerInputController::class, 'storeRating']);
     // Route::get('customer/order', [CustomerController::class, 'index']);
     // Route::post('customer/order/store', [CustomerController::class, 'store']);
@@ -183,3 +194,7 @@ Route::group(['middleware' => 'administrator'], function () {
     // customer page (sample)
     Route::get('administrator/customer/', [CustomerInputController::class, 'index']);
 });
+
+// Auth::routes();
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

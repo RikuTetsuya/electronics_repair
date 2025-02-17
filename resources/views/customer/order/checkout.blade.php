@@ -150,7 +150,6 @@
     @endpush
 
     <main class="main">
-
         <section id="order" class="dashboard section">
             <div class="container">
                 <div class="row">
@@ -514,7 +513,7 @@
 
                         // Tampilkan modal
                         $('#editOrderModal').modal('show');
-                    }
+                    }z
                 });
             });
         });

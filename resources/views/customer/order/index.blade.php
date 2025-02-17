@@ -165,6 +165,50 @@
                             ☰ Show Stats
                         </div>
                     </div>
+                    <form method="GET" action="{{ url('customer/order') }}" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="date" name="tanggal_masuk" class="form-control" placeholder="Tanggal Masuk" value="{{ request('tanggal_masuk') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="order_id" class="form-control" placeholder="Order ID" value="{{ request('order_id') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="layanan" class="form-control">
+                                    <option value="">Select Service</option>
+                                    @foreach ($layanans as $layanan)
+                                        <option value="{{ $layanan->id }}" {{ request('layanan') == $layanan->id ? 'selected' : '' }}>
+                                            {{ $layanan->nama_layanan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="status" class="form-control">
+                                    <option value="">Select Status</option>
+                                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Waiting</option>
+                                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Rejected</option>
+                                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>Accepted</option>
+                                    <option value="3" {{ request('status') == '3' ? 'selected' : '' }}>On Process</option>
+                                    <option value="4" {{ request('status') == '4' ? 'selected' : '' }}>Finished</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mt-2">
+                                <select name="status_payment" class="form-control">
+                                    <option value="">Payment Status</option>
+                                    <option value="Unpaid" {{ request('status_payment') == 'Unpaid' ? 'selected' : '' }}>Unpaid</option>
+                                    <option value="Paid" {{ request('status_payment') == 'Paid' ? 'selected' : '' }}>Paid (e-payment)</option>
+                                    <option value="Paid in Cash" {{ request('status_payment') == 'Paid in Cash' ? 'selected' : '' }}>Paid in Cash</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mt-2">
+                                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i> Filter</button>
+                            </div>
+                            <div class="col-md-3 mt-2">
+                                <a href="{{ url('customer/order') }}" class="btn btn-secondary btn-block"><i class="fas fa-sync"></i> Reset</a>
+                            </div>
+                        </div>
+                    </form>
                     @include('_message')
                     <!-- Column for Order Statistics Cards (Narrower) -->
                     <div class="col-md-4" id="dashboardCards">
@@ -280,7 +324,8 @@
                                                         <span class="badge badge-danger">No need</span>
                                                     @endif
                                                 </p>
-                                                <p class="card-text"><i class="fas fa-calendar-check"></i> <strong>Estimasi
+                                                <p class="card-text"><i class="fas fa-calendar-check"></i>
+                                                    <strong>Estimasi
                                                         Selesai:</strong>
                                                     {{ $val->tanggal_estimasi ? \Carbon\Carbon::parse($val->tanggal_estimasi)->translatedFormat('d-F-Y') : '- (belum diperkirakan)' }}
                                                 </p>
@@ -335,7 +380,7 @@
                                                     data-tanggal-estimasi="{{ $val->tanggal_estimasi }}"><i
                                                         class="fa fa-eye"></i> View</button>
 
-                                                @if ($val->status == 0 || $val->status == 1 || $val->status == 2)
+                                                @if ($val->status == 0 || $val->status == 2)
                                                     {{-- <a href="{{ url('customer/order/edit/' . $val->id) }}"
                                                         class="btn btn-xs btn-primary">
                                                         <i class="fa fa-pencil-alt"></i> Edit
@@ -344,26 +389,26 @@
                                                         data-order-id="{{ $val->id }}">
                                                         <i class="fa fa-pencil-alt"></i> Edit
                                                     </button>
-                                                @else
+                                                    {{-- @else
                                                     <button type="button" class="btn btn-xs btn-primary" disabled
                                                         title="TIDAK DAPAT MENGEDIT PESANAN JIKA SUDAH DIPROSES ATAU DISELESAIKAN">
                                                         <i class="fas fa-ban"></i> Edit
-                                                    </button>
+                                                    </button> --}}
                                                 @endif
 
                                                 <form action="{{ url('delete_order/' . $val->id) }}" method="POST"
                                                     style="display:inline;">
                                                     @csrf
-                                                    @if ($val->status == 0 || $val->status == 1)
+                                                    @if ($val->status == 0)
                                                         <button action="{{ url('delete_order/' . $val->id) }}"
                                                             method="POST" class="delete-confirm btn btn-xs btn-danger">
                                                             <i class="fa fa-trash"></i> Delete
                                                         </button>
-                                                    @else
+                                                        {{-- @else
                                                         <button type="button" class="btn btn-xs btn-danger" disabled
                                                             title="TIDAK DAPAT MEMBATALKAN PESANAN JIKA SUDAH DIPROSES ATAU DISELESAIKAN">
                                                             <i class="fas fa-ban"></i> Delete
-                                                        </button>
+                                                        </button> --}}
                                                     @endif
                                                 </form>
                                                 {{-- <p style="color: red">Pastikan lakukan pembayaran di tempat kami. Jika berhalangan untuk datang, hubungi admin sebelum melakukan pembayaran untuk konfirmasi</p> --}}

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 
 class FaqsController extends Controller
 {
@@ -11,7 +13,8 @@ class FaqsController extends Controller
      */
     public function index()
     {
-        //
+        $faqs = DB::table('master_faqs')->get();
+        return view('admin.faqs.index', compact('faqs'));
     }
 
     /**
@@ -19,7 +22,7 @@ class FaqsController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.faqs.add');
     }
 
     /**
@@ -27,7 +30,18 @@ class FaqsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = [
+            'question' => $request->question,
+            'answer' => $request->answer,
+            // 'status' => $request->status,
+        ];
+
+        $simpan = DB::table('master_faqs')->insert($data);
+        if ($simpan) {
+            return redirect('admin/faqs/list')->with(['success' => 'FAQ Added']);
+        } else {
+            return redirect('admin/faqs/list')->with(['warning' => 'FAQ Failed to Add']);
+        }
     }
 
     /**
@@ -43,7 +57,8 @@ class FaqsController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $faqs = DB::table('master_faqs')->where('id', $id)->first();
+        return view('admin.faqs.edit', compact('faqs'));
     }
 
     /**
@@ -51,14 +66,32 @@ class FaqsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = [
+            'question' => $request->question,
+            'answer' => $request->answer,
+            // 'status' => $request->status,
+        ];
+
+        $simpan = DB::table('master_faqs')->where('id', $id)->update($data);
+        if ($simpan) {
+            return redirect('admin/faqs/list')->with(['success' => 'FAQ Edited']);
+        } else {
+            return redirect('admin/faqs/list')->with(['warning' => 'FAQ Failed to Change']);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    
+
+    public function destroy($id)
     {
-        //
+        $delete = DB::table('master_faqs')->where('id', $id)->delete();
+        if ($delete) {
+            return Redirect::back()->with('success', 'FAQ Deleted');
+        } else {
+            return Redirect::back()->with('warning', 'FAQ Failed to Delete');
+        }
     }
 }

@@ -148,9 +148,9 @@ class CheckoutController extends Controller
             ->where('service_ins.id', $id) // Ambil data berdasarkan ID
             ->first();
 
-        // if (!$invoice) {
-        //     return redirect()->back()->with('error', 'Invoice not found.');
-        // }
+        if (!$invoice) {
+            return redirect()->back()->with('error', 'Invoice not found.');
+        }
 
         if ($request->query('output') == 'pdf') {
             $pdf = Pdf::loadView('customer.order.invoice', compact('invoice'));
