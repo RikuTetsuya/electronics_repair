@@ -120,6 +120,140 @@
                 max-width: 100%;
                 /* Maksimalkan area isi modal */
             }
+
+            .modal-content {
+                border-radius: 10px;
+            }
+
+            .modal-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+                font-weight: bold;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-footer {
+                border-top: 1px solid #dee2e6;
+            }
+
+            .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 0.3rem;
+            --stroke: #666;
+            --fill: #ffc73a;
+        }
+
+        .rating input {
+            appearance: unset;
+        }
+
+        .rating label {
+            cursor: pointer;
+        }
+
+        .rating svg {
+            width: 2rem;
+            height: 2rem;
+            overflow: visible;
+            fill: transparent;
+            stroke: var(--stroke);
+            stroke-linejoin: bevel;
+            stroke-dasharray: 12;
+            animation: idle 4s linear infinite;
+            transition: stroke 0.2s, fill 0.5s;
+        }
+
+        @keyframes idle {
+            from {
+                stroke-dashoffset: 24;
+            }
+        }
+
+        .rating label:hover svg {
+            stroke: var(--fill);
+        }
+
+        .rating input:checked~label svg {
+            transition: 0s;
+            animation: idle 4s linear infinite, yippee 0.75s backwards;
+            fill: var(--fill);
+            stroke: var(--fill);
+            stroke-opacity: 0;
+            stroke-dasharray: 0;
+            stroke-linejoin: miter;
+            stroke-width: 8px;
+        }
+
+        @keyframes yippee {
+            0% {
+                transform: scale(1);
+                fill: var(--fill);
+                fill-opacity: 0;
+                stroke-opacity: 1;
+                stroke: var(--stroke);
+                stroke-dasharray: 10;
+                stroke-width: 1px;
+                stroke-linejoin: bevel;
+            }
+
+            30% {
+                transform: scale(0);
+                fill: var(--fill);
+                fill-opacity: 0;
+                stroke-opacity: 1;
+                stroke: var(--stroke);
+                stroke-dasharray: 10;
+                stroke-width: 1px;
+                stroke-linejoin: bevel;
+            }
+
+            30.1% {
+                stroke: var(--fill);
+                stroke-dasharray: 0;
+                stroke-linejoin: miter;
+                stroke-width: 8px;
+            }
+
+            60% {
+                transform: scale(1.2);
+                fill: var(--fill);
+            }
+
+
+            .testimonial-wrap {
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                text-align: center;
+                margin: 10px;
+            }
+
+            .testimonial-item {
+                padding: 15px;
+            }
+
+            .testimonial-img {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-bottom: 15px;
+            }
+
+            .stars i {
+                color: #ffc107;
+            }
+
+        }
         </style>
     @endpush
 
@@ -168,16 +302,19 @@
                     <form method="GET" action="{{ url('customer/order') }}" class="mb-4">
                         <div class="row">
                             <div class="col-md-3">
-                                <input type="date" name="tanggal_masuk" class="form-control" placeholder="Tanggal Masuk" value="{{ request('tanggal_masuk') }}">
+                                <input type="date" name="tanggal_masuk" class="form-control" placeholder="Tanggal Masuk"
+                                    value="{{ request('tanggal_masuk') }}">
                             </div>
                             <div class="col-md-3">
-                                <input type="text" name="order_id" class="form-control" placeholder="Order ID" value="{{ request('order_id') }}">
+                                <input type="text" name="order_id" class="form-control" placeholder="Order ID"
+                                    value="{{ request('order_id') }}">
                             </div>
                             <div class="col-md-3">
                                 <select name="layanan" class="form-control">
                                     <option value="">Select Service</option>
                                     @foreach ($layanans as $layanan)
-                                        <option value="{{ $layanan->id }}" {{ request('layanan') == $layanan->id ? 'selected' : '' }}>
+                                        <option value="{{ $layanan->id }}"
+                                            {{ request('layanan') == $layanan->id ? 'selected' : '' }}>
                                             {{ $layanan->nama_layanan }}
                                         </option>
                                     @endforeach
@@ -187,25 +324,35 @@
                                 <select name="status" class="form-control">
                                     <option value="">Select Status</option>
                                     <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>Waiting</option>
-                                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Rejected</option>
-                                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>Accepted</option>
-                                    <option value="3" {{ request('status') == '3' ? 'selected' : '' }}>On Process</option>
-                                    <option value="4" {{ request('status') == '4' ? 'selected' : '' }}>Finished</option>
+                                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Rejected
+                                    </option>
+                                    <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>Accepted
+                                    </option>
+                                    <option value="3" {{ request('status') == '3' ? 'selected' : '' }}>On Process
+                                    </option>
+                                    <option value="4" {{ request('status') == '4' ? 'selected' : '' }}>Finished
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-3 mt-2">
                                 <select name="status_payment" class="form-control">
                                     <option value="">Payment Status</option>
-                                    <option value="Unpaid" {{ request('status_payment') == 'Unpaid' ? 'selected' : '' }}>Unpaid</option>
-                                    <option value="Paid" {{ request('status_payment') == 'Paid' ? 'selected' : '' }}>Paid (e-payment)</option>
-                                    <option value="Paid in Cash" {{ request('status_payment') == 'Paid in Cash' ? 'selected' : '' }}>Paid in Cash</option>
+                                    <option value="Unpaid" {{ request('status_payment') == 'Unpaid' ? 'selected' : '' }}>
+                                        Unpaid</option>
+                                    <option value="Paid" {{ request('status_payment') == 'Paid' ? 'selected' : '' }}>Paid
+                                        (e-payment)</option>
+                                    <option value="Paid in Cash"
+                                        {{ request('status_payment') == 'Paid in Cash' ? 'selected' : '' }}>Paid in Cash
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-3 mt-2">
-                                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i> Filter</button>
+                                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i>
+                                    Filter</button>
                             </div>
                             <div class="col-md-3 mt-2">
-                                <a href="{{ url('customer/order') }}" class="btn btn-secondary btn-block"><i class="fas fa-sync"></i> Reset</a>
+                                <a href="{{ url('customer/order') }}" class="btn btn-secondary btn-block"><i
+                                        class="fas fa-sync"></i> Reset</a>
                             </div>
                         </div>
                     </form>
@@ -355,6 +502,11 @@
                                                 @endif
 
                                                 @if ($val->status_payment == 'Paid' || $val->status_payment == 'Paid in Cash')
+                                                    <!-- Tombol untuk membuka modal -->
+                                                    <button type="button" class="btn" style="background-color: purple; color: white;" data-bs-toggle="modal"
+                                                        data-bs-target="#ratingModal">
+                                                        <i class="bi bi-stars"></i> Review
+                                                    </button>
                                                     <a href="{{ url('customer/detail/' . $val->order_id) }}"
                                                         class="btn btn-primary">
                                                         <i class="fas fa-file-invoice"></i> Invoice
@@ -635,6 +787,81 @@
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Rating -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ratingModalLabel">Add Your Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form action="{{ url('customer/main/rating/store') }}" method="POST">
+                        @csrf
+                        @method('POST')
+                        <!-- Rating -->
+                        <div class="rating">
+                            <input type="radio" id="star-5" name="ratingValue" value="5" required>
+                            <label for="star-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-4" name="ratingValue" value="4">
+                            <label for="star-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-3" name="ratingValue" value="3">
+                            <label for="star-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-2" name="ratingValue" value="2">
+                            <label for="star-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-1" name="ratingValue" value="1">
+                            <label for="star-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                        </div>
+
+                        <!-- Ulasan -->
+                        <div class="form-group mb-3">
+                            <textarea class="form-control" id="reviewText" name="reviewText" rows="4"
+                                placeholder="Write or update your rating and review here" required></textarea>
+                        </div>
+
+                        <!-- Tombol Kirim -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

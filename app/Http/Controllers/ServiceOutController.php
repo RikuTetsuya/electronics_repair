@@ -160,111 +160,80 @@ class ServiceOutController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
-    {
-        $reportouts = DB::table('service_ins')
-            ->join('users', 'service_ins.user_id', '=', 'users.id')
-            ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
-            ->leftJoin('service_outs', 'service_ins.id', '=', 'service_outs.service_in_id') // Join ke service_outs
-            ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id') // Join ke master_mitras
-            ->select(
-                'service_ins.order_id',
-                'users.name',
-                'users.email',
-                'users.telepon',
-                'users.alamat',
-                'master_layanans.nama_layanan',
-                'master_mitras.nama_mitra', // Kolom dari master_mitras
-                'service_ins.id',
-                'service_ins.tanggal_masuk',
-                'service_ins.deskripsi_masalah',
-                'service_ins.status',
-                'service_ins.status_payment',
-                'service_ins.tanggal_estimasi',
-                'service_ins.perbaikan_pihak_ketiga',
-                'service_ins.harga',
-                'service_ins.catatan',
-                'service_outs.mitra_id',
-                'service_outs.tanggal_keluar',
-                'service_outs.tanggal_diterima',
-                'service_outs.status as status_souts',
-                'service_outs.biaya',
-                'service_outs.catatan as catatan_service_out',
-                'service_outs.status as status_service_out',
-                DB::raw('COALESCE(service_ins.harga, 0) + COALESCE(service_outs.biaya, 0) as total_biaya') // Hitung total biaya
-            )
-            ->where('service_outs.id', $id) // Tambahkan baris ini untuk memfilter berdasarkan ID
-            ->first();
-        $mitras = DB::table('master_mitras')
-            ->select('id as mitra_id', 'nama_mitra', 'alamat') // Ambil ID, nama mitra, dan alamat
-            ->get();
+{
+    $reportout = DB::table('service_outs')
+        ->join('service_ins', 'service_outs.service_in_id', '=', 'service_ins.id')
+        ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
+        ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id')
+        ->select(
+            'service_outs.*',
+            'service_ins.deskripsi_masalah',
+            'master_layanans.nama_layanan',
+            'master_mitras.nama_mitra'
+        )
+        ->where('service_outs.id', $id)
+        ->first();
 
-        $desc = DB::table('service_ins')->get();
-        return view('admin.reportouts.edit', compact('reportouts', 'mitras'));
+    if (!$reportout) {
+        return redirect()->back()->withErrors(['error' => 'Data Service Out tidak ditemukan']);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        // Validasi input
-        $request->validate([
-            'mitra_id' => 'required',
-            'tanggal_diterima' => 'nullable|date',
-            'biaya' => 'nullable|numeric',
-            'catatan' => 'nullable|string',
-            'status' => 'required|integer|in:0,1,2',
+    $mitras = DB::table('master_mitras')
+        ->select('id as mitra_id', 'nama_mitra', 'alamat')
+        ->get();
+
+    return view('admin.reportouts.edit', compact('reportout', 'mitras'));
+}
+
+public function update(Request $request, string $id)
+{
+    $request->validate([
+        'mitra_id' => 'required',
+        'tanggal_diterima' => 'nullable|date',
+        'biaya' => 'nullable|numeric',
+        'catatan' => 'nullable|string',
+        'status' => 'required|integer|in:0,1,2',
+    ]);
+
+    $serviceOut = DB::table('service_outs')->where('id', $id)->first();
+    if (!$serviceOut) {
+        return redirect()->back()->withErrors(['error' => 'Data Service Out tidak ditemukan']);
+    }
+
+    $serviceIn = DB::table('service_ins')->where('id', $serviceOut->service_in_id)->first();
+    if (!$serviceIn) {
+        return redirect()->back()->withErrors(['error' => 'Data Service In tidak ditemukan']);
+    }
+
+    $tanggalDiterima = $request->input('tanggal_diterima') ? \Carbon\Carbon::parse($request->input('tanggal_diterima')) : null;
+
+    if ($tanggalDiterima && $tanggalDiterima->lt($serviceOut->tanggal_keluar)) {
+        return redirect()->back()->withErrors(['tanggal_diterima' => 'Tanggal diterima tidak boleh lebih kecil dari tanggal keluar']);
+    }
+
+    DB::table('service_outs')
+        ->where('id', $id)
+        ->update([
+            'mitra_id' => $request->mitra_id,
+            'tanggal_diterima' => $request->input('tanggal_diterima'),
+            'biaya' => $request->input('biaya'),
+            'catatan' => $request->input('catatan'),
+            'status' => $request->input('status'),
+            'updated_at' => now(),
         ]);
 
-        // Ambil data service_out yang akan diupdate
-        $serviceOut = DB::table('service_outs')->where('id', $id)->first();
-        if (!$serviceOut) {
-            return redirect()->back()->withErrors(['error' => 'Data Service Out tidak ditemukan']);
-        }
+    $totalHarga = (float) $serviceIn->harga + (float) $request->input('biaya');
 
-        // Ambil data service_in yang terkait
-        $serviceIn = DB::table('service_ins')->where('id', $serviceOut->service_in_id)->first();
-        if (!$serviceIn) {
-            return redirect()->back()->withErrors(['error' => 'Data Service In tidak ditemukan']);
-        }
+    DB::table('service_ins')
+        ->where('id', $serviceOut->service_in_id)
+        ->update([
+            'total_harga' => $totalHarga,
+            'updated_at' => now(),
+        ]);
 
-        // Ambil tanggal_diterima dari input user
-        $tanggalDiterima = $request->input('tanggal_diterima') ? \Carbon\Carbon::parse($request->input('tanggal_diterima')) : null;
-
-        // Jika tanggal diterima diisi, lakukan pengecekan dengan tanggal keluar
-        if ($tanggalDiterima && $tanggalDiterima->lt($serviceOut->tanggal_keluar)) {
-            return redirect()->back()->withErrors(['tanggal_diterima' => 'Tanggal diterima tidak boleh sama atau kurang dari tanggal keluar']);
-        }
-
-        // Update data service_outs
-        DB::table('service_outs')
-            ->where('id', $id)
-            ->update([
-                'mitra_id' => $request->mitra_id,
-                'tanggal_diterima' => $request->input('tanggal_diterima'),
-                'biaya' => $request->input('biaya'),
-                'catatan' => $request->input('catatan'),
-                'status' => $request->input('status'),
-                'updated_at' => now(),
-            ]);
-
-        // Hitung total_harga baru
-        $harga = (float) $serviceIn->harga;
-        $biaya = (float) $request->input('biaya');
-        $totalHarga = $harga + $biaya;
-
-        // Update total_harga di service_ins
-        DB::table('service_ins')
-            ->where('id', $serviceOut->service_in_id)
-            ->update([
-                'total_harga' => $totalHarga,
-                'updated_at' => now(),
-            ]);
-
-        // Redirect ke halaman list dengan pesan sukses
-        return redirect('admin/service_out/list')
-            ->with('success', 'Service Out updated successfully.');
-    }
+    return redirect('admin/service_out/list')
+        ->with('success', 'Service Out updated successfully.');
+}
 
 
     // public function update(Request $request, string $id)
