@@ -144,116 +144,116 @@
             }
 
             .rating {
-            display: flex;
-            flex-direction: row-reverse;
-            gap: 0.3rem;
-            --stroke: #666;
-            --fill: #ffc73a;
-        }
-
-        .rating input {
-            appearance: unset;
-        }
-
-        .rating label {
-            cursor: pointer;
-        }
-
-        .rating svg {
-            width: 2rem;
-            height: 2rem;
-            overflow: visible;
-            fill: transparent;
-            stroke: var(--stroke);
-            stroke-linejoin: bevel;
-            stroke-dasharray: 12;
-            animation: idle 4s linear infinite;
-            transition: stroke 0.2s, fill 0.5s;
-        }
-
-        @keyframes idle {
-            from {
-                stroke-dashoffset: 24;
+                display: flex;
+                flex-direction: row-reverse;
+                gap: 0.3rem;
+                --stroke: #666;
+                --fill: #ffc73a;
             }
-        }
 
-        .rating label:hover svg {
-            stroke: var(--fill);
-        }
+            .rating input {
+                appearance: unset;
+            }
 
-        .rating input:checked~label svg {
-            transition: 0s;
-            animation: idle 4s linear infinite, yippee 0.75s backwards;
-            fill: var(--fill);
-            stroke: var(--fill);
-            stroke-opacity: 0;
-            stroke-dasharray: 0;
-            stroke-linejoin: miter;
-            stroke-width: 8px;
-        }
+            .rating label {
+                cursor: pointer;
+            }
 
-        @keyframes yippee {
-            0% {
-                transform: scale(1);
-                fill: var(--fill);
-                fill-opacity: 0;
-                stroke-opacity: 1;
+            .rating svg {
+                width: 2rem;
+                height: 2rem;
+                overflow: visible;
+                fill: transparent;
                 stroke: var(--stroke);
-                stroke-dasharray: 10;
-                stroke-width: 1px;
                 stroke-linejoin: bevel;
+                stroke-dasharray: 12;
+                animation: idle 4s linear infinite;
+                transition: stroke 0.2s, fill 0.5s;
             }
 
-            30% {
-                transform: scale(0);
-                fill: var(--fill);
-                fill-opacity: 0;
-                stroke-opacity: 1;
-                stroke: var(--stroke);
-                stroke-dasharray: 10;
-                stroke-width: 1px;
-                stroke-linejoin: bevel;
+            @keyframes idle {
+                from {
+                    stroke-dashoffset: 24;
+                }
             }
 
-            30.1% {
+            .rating label:hover svg {
                 stroke: var(--fill);
+            }
+
+            .rating input:checked~label svg {
+                transition: 0s;
+                animation: idle 4s linear infinite, yippee 0.75s backwards;
+                fill: var(--fill);
+                stroke: var(--fill);
+                stroke-opacity: 0;
                 stroke-dasharray: 0;
                 stroke-linejoin: miter;
                 stroke-width: 8px;
             }
 
-            60% {
-                transform: scale(1.2);
-                fill: var(--fill);
+            @keyframes yippee {
+                0% {
+                    transform: scale(1);
+                    fill: var(--fill);
+                    fill-opacity: 0;
+                    stroke-opacity: 1;
+                    stroke: var(--stroke);
+                    stroke-dasharray: 10;
+                    stroke-width: 1px;
+                    stroke-linejoin: bevel;
+                }
+
+                30% {
+                    transform: scale(0);
+                    fill: var(--fill);
+                    fill-opacity: 0;
+                    stroke-opacity: 1;
+                    stroke: var(--stroke);
+                    stroke-dasharray: 10;
+                    stroke-width: 1px;
+                    stroke-linejoin: bevel;
+                }
+
+                30.1% {
+                    stroke: var(--fill);
+                    stroke-dasharray: 0;
+                    stroke-linejoin: miter;
+                    stroke-width: 8px;
+                }
+
+                60% {
+                    transform: scale(1.2);
+                    fill: var(--fill);
+                }
+
+
+                .testimonial-wrap {
+                    background: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                    text-align: center;
+                    margin: 10px;
+                }
+
+                .testimonial-item {
+                    padding: 15px;
+                }
+
+                .testimonial-img {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    margin-bottom: 15px;
+                }
+
+                .stars i {
+                    color: #ffc107;
+                }
+
             }
-
-
-            .testimonial-wrap {
-                background: #fff;
-                border-radius: 10px;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                padding: 20px;
-                text-align: center;
-                margin: 10px;
-            }
-
-            .testimonial-item {
-                padding: 15px;
-            }
-
-            .testimonial-img {
-                width: 80px;
-                height: 80px;
-                border-radius: 50%;
-                object-fit: cover;
-                margin-bottom: 15px;
-            }
-
-            .stars i {
-                color: #ffc107;
-            }
-
-        }
         </style>
     @endpush
 
@@ -431,7 +431,7 @@
                                                 {{-- <p class="card-text"><i class="fas fa-calendar"></i> {{ \Carbon\Carbon::parse($val->tanggal_masuk)->translatedFormat('d-F-Y') }}</p> --}}
                                                 <hr>
                                                 <strong class="card-text">
-                                                    <strong>Layanan</strong> {{ $val->nama_layanan }}
+                                                    <strong>Selected Service : </strong> {{ $val->nama_layanan }}
                                                     @if ($val->status == 0)
                                                         <span class="badge badge-warning"
                                                             style="margin-left: 10px;">Waiting...</span>
@@ -476,16 +476,6 @@
                                                         Selesai:</strong>
                                                     {{ $val->tanggal_estimasi ? \Carbon\Carbon::parse($val->tanggal_estimasi)->translatedFormat('d-F-Y') : '- (belum diperkirakan)' }}
                                                 </p>
-                                                @if ($val->tanggal_estimasi)
-                                                    <?php
-                                                    $tanggalMasuk = \Carbon\Carbon::parse($val->tanggal_masuk);
-                                                    $tanggalEstimasi = \Carbon\Carbon::parse($val->tanggal_estimasi);
-                                                    $sisaHari = $tanggalEstimasi->diffInDays($tanggalMasuk);
-                                                    ?>
-                                                    @if ($sisaHari > 0)
-                                                        <p>Selesai dalam {{ $sisaHari }} hari</p>
-                                                    @endif
-                                                @endif
 
                                                 @if ($val->status == 4 && $val->status_payment == 'Unpaid')
                                                     <a href="{{ url('customer/checkout/' . $val->order_id) }}"
@@ -503,13 +493,15 @@
 
                                                 @if ($val->status_payment == 'Paid' || $val->status_payment == 'Paid in Cash')
                                                     <!-- Tombol untuk membuka modal -->
-                                                    <button type="button" class="btn" style="background-color: purple; color: white;" data-bs-toggle="modal"
-                                                        data-bs-target="#ratingModal">
+                                                    {{-- <button type="button" class="btn view-rating"
+                                                        style="background-color: purple; color: white;"
+                                                        data-bs-toggle="modal" data-bs-target="#ratingModal"
+                                                        data-order-id-customer="{{ $val->order_id }}">
                                                         <i class="bi bi-stars"></i> Review
-                                                    </button>
+                                                    </button> --}}
                                                     <a href="{{ url('customer/detail/' . $val->order_id) }}"
                                                         class="btn btn-primary">
-                                                        <i class="fas fa-file-invoice"></i> Invoice
+                                                        <i class="fas fa-file-invoice"></i> Details <i class="bi bi-stars"></i>
                                                     </a>
                                                 @endif
 
@@ -798,13 +790,17 @@
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h5 class="modal-title" id="ratingModalLabel">Add Your Review</h5>
+                    <h5 class="modal-title" id="viewModalLabel">
+                        {{-- <i class="fas fa-tag"></i> <span id="modal-customer-name-title"></span>'s Order Detail --}}
+                        <i class="fas fa-ticket-alt ml-3"></i> <span id="modal-order-id-customer"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
                 <div class="modal-body">
-                    <form action="{{ url('customer/main/rating/store') }}" method="POST">
+                    <form action="{{ url('customer/orderRatingStore/') }}" method="POST">
                         @csrf
-                        @method('POST')
+                        @method('PUT')
                         <!-- Rating -->
                         <div class="rating">
                             <input type="radio" id="star-5" name="ratingValue" value="5" required>
@@ -1021,5 +1017,16 @@
                 }) : '- (belum diperkirakan)'
             );
         });
+
+        
+
+        // Modal for rating details
+        // $('.view-rating').click(function() {
+            
+        //     var OrderIdCustomer = $(this).data('order-id-customer');
+            
+        //     $('#modal-order-id-customer').text(OrderIdCustomer);
+
+        // });
     </script>
 @endpush

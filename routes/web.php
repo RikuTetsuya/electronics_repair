@@ -72,6 +72,20 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('admin/admin/activate/{id}', [AdminController::class, 'activate']);
     Route::post('/delete_admin/{id}', [AdminController::class, 'destroy']);
 
+    // customer list
+    Route::get('admin/customer/list', [AdminController::class, 'listCust']);
+    Route::get('admin/customer/add', [AdminController::class, 'add']);
+    Route::post('admin/customer/add', [AdminController::class, 'insert']);
+    Route::get('admin/customer/edit/{id}', [AdminController::class, 'edit']);
+    Route::post('admin/customer/edit/{id}', [AdminController::class, 'update']);
+    Route::get('admin/customer/deactivate/{id}', [AdminController::class, 'deactivateCust']);
+    Route::get('admin/customer/activate/{id}', [AdminController::class, 'activateCust']);
+    Route::post('/delete_customer/{id}', [AdminController::class, 'destroy']);
+
+    Route::get('admin/rating/list', [AdminController::class, 'listRating']);
+    Route::get('admin/rating/edit/{id}', [AdminController::class, 'editRatingOrder']);
+    Route::post('admin/rating/update/{id}', [AdminController::class, 'updateRatingOrder']);
+
     // service list
     Route::get('admin/service/list', [ServiceController::class, 'index']);
     Route::get('admin/service/add', [ServiceController::class, 'create']);
@@ -96,7 +110,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::post('admin/faqs/update/{id}', [FaqsController::class, 'update']);
     Route::post('/delete_faqs/{id}', [FaqsController::class, 'destroy']);
 
-    // faqs list
+    // employee list
     Route::get('admin/employee/list', [EmployeeController::class, 'index']);
     Route::get('admin/employee/add', [EmployeeController::class, 'create']);
     Route::post('admin/employee/insert', [EmployeeController::class, 'store']);
@@ -113,6 +127,14 @@ Route::group(['middleware' => 'admin'], function () {
     // report out list
     Route::get('admin/service_out/list', [ServiceOutController::class, 'index']);
 
+    // Rute untuk menampilkan form edit profil
+    Route::middleware('auth')->get('admin/profile/', [AdminController::class, 'accInfo']);
+    // Rute untuk memproses perubahan profil (termasuk gambar)
+    Route::middleware('auth')->post('admin/profile/upload-picture', [AdminController::class, 'updateProfilePic']);
+    Route::middleware('auth')->post('admin/profile/update', [AdminController::class, 'updateaccInfo']);
+    Route::post('admin/profile/change-password', [AdminController::class, 'changePassword']);
+    Route::middleware('auth')->post('admin/profile/delete-picture', [AdminController::class, 'deleteProfilePic']);
+
     // Route::get('/admin/service_out/{id}', [ServiceOutController::class, 'show']);
     Route::get('admin/service_out/add', [ServiceOutController::class, 'create']);
     Route::post('admin/service_out/store/', [ServiceOutController::class, 'store']);
@@ -128,8 +150,9 @@ Route::group(['middleware' => 'admin'], function () {
 });
 
 Route::group(['middleware' => 'customer'], function () {
-    Route::get('customer/main/', [CustomerInputController::class, 'main'])->middleware('verified');
+    Route::get('customer/main/', [CustomerInputController::class, 'main']);
     Route::post('customer/main/rating/store', [CustomerInputController::class, 'storeRating']);
+    
     // Route::get('customer/order', [CustomerController::class, 'index']);
     // Route::post('customer/order/store', [CustomerController::class, 'store']);
 
@@ -139,6 +162,9 @@ Route::group(['middleware' => 'customer'], function () {
     Route::get('customer/checkout/{id}', [CheckoutController::class, 'checkout']);
     Route::get('customer/detail/{id}', [CheckoutController::class, 'details']);
     Route::get('customer/invoice/{id}', [CheckoutController::class, 'invoice']);
+
+    // Route::get('customer/orderRating/{id}/edit', [CustomerInputController::class, 'storeRatingOrder']);
+    Route::post('customer/storeRatingOrder/{id}', [CheckoutController::class, 'storeRatingOrder']);
 
     Route::get('customer/order/add', [CustomerInputController::class, 'create']);
     Route::post('customer/order/store', [CustomerInputController::class, 'store']);

@@ -107,7 +107,9 @@ class CheckoutController extends Controller
                 // $order->update(['status_payment' => 'Paid']);
                 DB::table('service_ins')
                     ->where('order_id', $request->order_id)
-                    ->update(['status_payment' => 'Paid']);
+                    ->update(['status_payment' => 'Paid',
+                                       'updated_at' => now(),
+                ]);
             }
         }
     }
@@ -185,6 +187,8 @@ class CheckoutController extends Controller
                 'service_ins.harga',
                 'service_ins.total_harga',
                 'service_ins.catatan',
+                'service_ins.rating',
+                'service_ins.feedback',
                 'service_outs.tanggal_keluar',
                 'service_outs.tanggal_diterima',
                 'service_outs.biaya',
@@ -202,4 +206,32 @@ class CheckoutController extends Controller
 
         return view('customer.order.detail', compact('reportins'));
     }
+
+    public function storeRatingOrder(Request $request, $id)
+    {
+        // Validasi input
+    $request->validate([
+        'ratingValue' => 'required|integer|min:1|max:5',
+        'reviewText' => 'required|string|max:255',
+    ]);
+
+    // Cek apakah data service_ins ada
+    $serviceIn = DB::table('service_ins')->where('id', $id)->first();
+
+    if (!$serviceIn) {
+        return redirect()->back()->with('error', 'Order not found.');
+    }
+
+    // Update rating dan feedback
+    DB::table('service_ins')
+        ->where('id', $id)
+        ->update([
+            'rating' => $request->ratingValue,
+            'feedback' => $request->reviewText,
+            // 'updated_at' => now(),
+        ]);
+
+    return redirect()->back()->with('success', 'Your Review Added Successfully!');
+    }
+
 }

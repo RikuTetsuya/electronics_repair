@@ -121,6 +121,120 @@
                 /* Maksimalkan area isi modal */
             }
         </style>
+
+        <style>
+            .rating {
+                display: flex;
+                flex-direction: row-reverse;
+                gap: 0.3rem;
+                --stroke: #666;
+                --fill: #ffc73a;
+            }
+
+            .rating input {
+                appearance: unset;
+            }
+
+            .rating label {
+                cursor: pointer;
+            }
+
+            .rating svg {
+                width: 2rem;
+                height: 2rem;
+                overflow: visible;
+                fill: transparent;
+                stroke: var(--stroke);
+                stroke-linejoin: bevel;
+                stroke-dasharray: 12;
+                animation: idle 4s linear infinite;
+                transition: stroke 0.2s, fill 0.5s;
+            }
+
+            @keyframes idle {
+                from {
+                    stroke-dashoffset: 24;
+                }
+            }
+
+            .rating label:hover svg {
+                stroke: var(--fill);
+            }
+
+            .rating input:checked~label svg {
+                transition: 0s;
+                animation: idle 4s linear infinite, yippee 0.75s backwards;
+                fill: var(--fill);
+                stroke: var(--fill);
+                stroke-opacity: 0;
+                stroke-dasharray: 0;
+                stroke-linejoin: miter;
+                stroke-width: 8px;
+            }
+
+            @keyframes yippee {
+                0% {
+                    transform: scale(1);
+                    fill: var(--fill);
+                    fill-opacity: 0;
+                    stroke-opacity: 1;
+                    stroke: var(--stroke);
+                    stroke-dasharray: 10;
+                    stroke-width: 1px;
+                    stroke-linejoin: bevel;
+                }
+
+                30% {
+                    transform: scale(0);
+                    fill: var(--fill);
+                    fill-opacity: 0;
+                    stroke-opacity: 1;
+                    stroke: var(--stroke);
+                    stroke-dasharray: 10;
+                    stroke-width: 1px;
+                    stroke-linejoin: bevel;
+                }
+
+                30.1% {
+                    stroke: var(--fill);
+                    stroke-dasharray: 0;
+                    stroke-linejoin: miter;
+                    stroke-width: 8px;
+                }
+
+                60% {
+                    transform: scale(1.2);
+                    fill: var(--fill);
+                }
+
+
+                .testimonial-wrap {
+                    background: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                    text-align: center;
+                    margin: 10px;
+                }
+
+                .testimonial-item {
+                    padding: 15px;
+                }
+
+                .testimonial-img {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    margin-bottom: 15px;
+                }
+
+                .stars i {
+                    color: #ffc107;
+                }
+
+            }
+        </style>
     @endpush
 
     @push('userscript')
@@ -202,7 +316,7 @@
                                     <a href="{{ url('customer/invoice/' . $reportins->id) }}" target="_blank"
                                         class="btn btn-warning" id="invoice-button">
                                         <i class="fas fa-file-invoice-dollar"></i> e-Invoice
-                                    </a>  
+                                    </a>
                                 </div>
                                 <br>
                             @endif
@@ -217,21 +331,54 @@
                     <!-- Column for Order Statistics Cards (Narrower) -->
                     <div class="col-md-4" id="dashboardCards">
                         <div class="dashboard-section">
-                            {{-- <!-- Card Secondary -->
-                            <div class="dashboard-card bg-secondary text-center">
-                                <i class="fas fa-ticket-alt"></i>
-                                <h3>Total Orders</h3>
-                                <p>{{ $reportins->order_id }}</p>
-                            </div> --}}
-
-                            <!-- Card Warning -->
+                            <!-- Card Order ID -->
                             <div class="dashboard-card card-primary text-center">
                                 <i class="fas fa-ticket-alt"></i>
                                 <h3 class="text-white">Order ID</h3>
                                 <p>{{ $reportins->order_id }}</p>
+
+                            </div>
+                            <div class="dashboard-section mt-4">
+                                <div class="card p-3">
+                                    <h4 class="text-center">Reviews</h4>
+                                    <p class="text-center">What people said about us</p>
+
+                                    <form action="{{ url('customer/storeRatingOrder/' . $reportins->id) }}" method="POST">
+                                        @csrf
+                                        @method('POST')
+
+                                        <!-- Rating -->
+                                        <!-- Rating -->
+                                        <div class="rating d-flex justify-content-center">
+                                            @for ($i = 5; $i >= 1; $i--)
+                                                <input type="radio" id="star-{{ $i }}" name="ratingValue"
+                                                    value="{{ $i }}"
+                                                    {{ old('ratingValue', $reportins->rating ?? '') == $i ? 'checked' : '' }}
+                                                    required>
+                                                <label for="star-{{ $i }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                        <path pathLength="360"
+                                                            d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                                        </path>
+                                                    </svg>
+                                                </label>
+                                            @endfor
+                                        </div>
+
+                                        <!-- Ulasan -->
+                                        <div class="form-group mt-3">
+                                            <textarea class="form-control" id="reviewText" name="reviewText" rows="3"
+                                                placeholder="Write or update your rating and review here" required>{{ old('reviewText', $reportins->feedback ?? '') }}</textarea>
+                                        </div>
+
+                                        <!-- Tombol Kirim -->
+                                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-stars"></i> Submit</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Column for Order Details Card (Wider) -->
                     <div class="col-md-8">
@@ -355,6 +502,75 @@
                 </div>
             </div>
         </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="testimonials section light-background">
+
+            <!-- Section Title -->
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Reviews</h2>
+                <p>What people said about us</p>
+                <div class="container mt-5">
+                    {{-- <h2 class="mb-4">Tambah Ulasan</h2> --}}
+                    <form action="{{ url('customer/main/rating/store') }}" method="POST">
+                        @csrf
+                        @method('POST')
+                        <!-- Rating -->
+                        <div class="rating">
+                            <input type="radio" id="star-5" name="ratingValue" value="5" required>
+                            <label for="star-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-4" name="ratingValue" value="4">
+                            <label for="star-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-3" name="ratingValue" value="3">
+                            <label for="star-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-2" name="ratingValue" value="2">
+                            <label for="star-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                            <input type="radio" id="star-1" name="ratingValue" value="1x">
+                            <label for="star-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path pathLength="360"
+                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
+                                    </path>
+                                </svg>
+                            </label>
+                        </div>
+
+                        <!-- Ulasan -->
+                        <div class="form-group mb-3">
+                            <textarea class="form-control" id="reviewText" name="reviewText" rows="4"
+                                placeholder="Write or update your rating and review here" required></textarea>
+                        </div>
+
+                        <!-- Tombol Kirim -->
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </section><!-- /Testimonials Section -->
     </main>
 
     <!-- Modal for Viewing Detail -->
@@ -433,8 +649,6 @@
 @endsection
 
 @push('userscript')
-    
-
     <!-- Select2 JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

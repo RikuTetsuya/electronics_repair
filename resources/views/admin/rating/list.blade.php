@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.bootstrap4.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.1.5/css/buttons.bootstrap4.min.css">
+    
 @endpush
 
 @section('content')
@@ -14,11 +15,11 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Mitra List</h1>
+            <h1>Service List</h1>
           </div>
           @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
           <div class="col-sm-6" style="text-align: right">
-            <a href="{{ url('admin/mitra/add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Mitra</a>
+            <a href="{{ url('admin/service/add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Service</a>
           </div>
           @endif
       </div><!-- /.container-fluid -->
@@ -59,17 +60,15 @@
 
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Perusahaan Mitra</h3></h3>
+                <h3 class="card-title">Layanan</h3></h3>
               </div>
               <div class="card-body">
                 <table id="example1" class="table table-striped" style="text-align: left">
                   <thead> 
                     <tr>
                       <th></th>
-                      <th>Perusahaan Mitra Pihak Ketiga</th>
-                      {{-- <th>Prediksi Harga</th> --}}
-                      <th>Alamat</th>
-                      {{-- <th>Created Date</th> --}}
+                      <th>Star</th>
+                      <th>Feedback</th>
                       @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
                       <th>Action</th>
                       <th></th>
@@ -80,22 +79,20 @@
                     @php
                       $no = 1;
                     @endphp
-                    @foreach ($mitra as $val)
+                    @foreach ($ratings as $val)
                       <tr>
                         {{-- <td>{{ $val->id }}</td> --}}
                         <td>{{ $no++ }}</td>
-                        <td>{{ $val->nama_mitra }}</td>
-                        <td>{{ $val->alamat }}</td>
-                        {{-- <td>Rp. {{ $val->harga }}</td> --}}
-                        {{-- <td>{{ date('d-m-Y H:i A', strtotime($val->created_at)) }}</td> --}}
+                        <td>{{ $val->rating }}</td>
+                        <td>{{ $val->feedback }}</td>
                         @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
                         <td>
-                          <a href="{{ url('admin/mitra/edit/' . $val->id) }}" class="btn btn-xs btn-primary" title="Edit"><i class="fa fa-edit"></i></a>
-                          {{-- <a href="{{ url('admin/mitra/activate/' . $val->id) }}" class="btn btn-xs btn-info" title="Activate"><i class="fa fa-power-off"></i></a>
-                          <a href="{{ url('admin/mitra/deactivate/' . $val->id) }}" class="btn btn-xs btn-warning" title="Diactivate"><i class="fa fa-power-off"></i></a> --}}
+                          <a href="{{ url('admin/rating/edit/' . $val->id) }}" class="btn btn-xs btn-primary" title="Edit"><i class="fa fa-edit"></i></a>
+                          {{-- <a href="{{ url('admin/service/activate/' . $val->id) }}" class="btn btn-xs btn-info" title="Activate"><i class="fa fa-power-off"></i></a>
+                          <a href="{{ url('admin/service/deactivate/' . $val->id) }}" class="btn btn-xs btn-warning" title="Diactivate"><i class="fa fa-power-off"></i></a> --}}
                         </td>
                         <td>
-                          <form action="{{ url('delete_mitra/' . $val->id) }}" method="POST">
+                          <form action="{{ url('delete_service/' . $val->id) }}" method="POST">
                             @csrf
                             <a class="delete-confirm btn btn-xs btn-danger" title="Delete"><i class="fa fa-trash"></i></a>
                           </form>

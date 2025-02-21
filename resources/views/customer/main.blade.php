@@ -166,9 +166,8 @@
                                 class="glightbox btn-watch-video d-flex align-items-center"></a>
                         </div>
                     </div>
-                    <div class="col-lg-6 order-1 order-lg-2 hero-img">
-                        <img src="{{ asset('userpage/assets/img/hero-img.png') }}" class="img-fluid animated"
-                            alt="">
+                    <div class="col-lg-5 order-1 order-lg-2 hero-img ps-lg-5">
+                        <img src="{{ asset('userpage/assets/img/VolTech_crop.png') }}" class="img-fluid animated" alt="">
                     </div>
                 </div>
             </div>
@@ -377,68 +376,7 @@
             <div class="container section-title" data-aos="fade-up">
                 <h2>Reviews</h2>
                 <p>What people said about us</p>
-                <div class="container mt-5">
-                    {{-- <h2 class="mb-4">Tambah Ulasan</h2> --}}
-                    <form action="{{ url('customer/main/rating/store') }}" method="POST">
-                        @csrf
-                        @method('POST')
-                        <!-- Rating -->
-                        <div class="rating">
-                            <input type="radio" id="star-5" name="ratingValue" value="5" required>
-                            <label for="star-5">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path pathLength="360"
-                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
-                                    </path>
-                                </svg>
-                            </label>
-                            <input type="radio" id="star-4" name="ratingValue" value="4" >
-                            <label for="star-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path pathLength="360"
-                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
-                                    </path>
-                                </svg>
-                            </label>
-                            <input type="radio" id="star-3" name="ratingValue" value="3">
-                            <label for="star-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path pathLength="360"
-                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
-                                    </path>
-                                </svg>
-                            </label>
-                            <input type="radio" id="star-2" name="ratingValue" value="2" >
-                            <label for="star-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path pathLength="360"
-                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
-                                    </path>
-                                </svg>
-                            </label>
-                            <input type="radio" id="star-1" name="ratingValue" value="1x">
-                            <label for="star-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <path pathLength="360"
-                                        d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z">
-                                    </path>
-                                </svg>
-                            </label>
-                        </div>
-
-                        <!-- Ulasan -->
-                        <div class="form-group mb-3">
-                            <textarea class="form-control" id="reviewText" name="reviewText" rows="4"
-                                placeholder="Write or update your rating and review here" required></textarea>
-                        </div>
-
-                        <!-- Tombol Kirim -->
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
-
-
-
+                
             </div>
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -449,7 +387,7 @@
                                 <img src="{{ $rating->image ? asset('storage/' . $rating->image) : 'https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/fox.jpg' }}"
                                     class="testimonial-img" alt="User Image">
                                 <h3>{{ $rating->user_name }}</h3>
-                                <h4>Customer</h4>
+                                <h4>{{ $rating->layanan }}</h4>
                                 <div class="stars">
                                     @for ($i = 0; $i < $rating->rating; $i++)
                                         <i class="bi bi-star-fill"></i>
@@ -460,7 +398,7 @@
                                 </div>
                                 <p>
                                     <i class="bi bi-quote"></i>
-                                    {{ $rating->description }}
+                                    {{ $rating->feedback }}
                                     <i class="bi bi-quote"></i>
                                 </p>
                             </div>
@@ -521,6 +459,35 @@
         <!-- /Pricing Section -->
 
         <!-- Faq Section -->
+        <section id="faq" class="faq section light-background">
+
+            <!-- Section Title -->
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Frequently Asked Questions</h2>
+                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+            </div><!-- End Section Title -->
+
+            <div class="container">
+
+                <div class="row faq-item" data-aos="fade-up" data-aos-delay="100">
+                    @foreach ($faqs as $val)
+                    <div class="col-lg-5 d-flex">
+                        <i class="bi bi-question-circle"></i>
+                        <h4>{{ $val->question }}</h4>
+                    </div>
+                    
+                    <div class="col-lg-7">
+                        <p>
+                            {{ $val->answer }}
+                        </p>
+                    </div>
+                    @endforeach
+                </div><!-- End F.A.Q Item-->
+
+            </div>
+
+        </section><!-- /Faq Section -->
+
         <section id="faq" class="faq section light-background">
 
             <!-- Section Title -->

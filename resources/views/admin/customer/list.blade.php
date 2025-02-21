@@ -100,9 +100,9 @@
                                                 <td>{{ \Carbon\Carbon::parse($val->created_at)->translatedFormat('d F Y') }}
                                                 </td>
                                                 <td>
-                                                    <a href="{{ url('admin/admin/edit/' . $val->id) }}"
+                                                    {{-- <a href="{{ url('admin/admin/edit/' . $val->id) }}"
                                                         class="btn btn-xs btn-primary" title="Edit"><i
-                                                            class="fa fa-edit"></i></a>
+                                                            class="fa fa-edit"></i></a> --}}
                                                     <a href="{{ url('admin/admin/activate/' . $val->id) }}"
                                                         class="btn btn-xs btn-info" title="Activate"><i
                                                             class="fa fa-power-off"></i></a>

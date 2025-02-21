@@ -87,7 +87,7 @@ class AuthController extends Controller
     public function login() {
         // dd(Hash::make('123'));
         if(!empty(Auth::check())){
-            if(Auth::user()->user_type == 1 || Auth::user()->user_type == 3)
+            if(Auth::user()->user_type == 1 || Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
             {
                 return redirect('admin/dashboard');
             }
@@ -149,7 +149,7 @@ class AuthController extends Controller
             }
     
         } else {
-            return redirect()->back()->with('error', 'Please enter the right email and password or your account has been banned');
+            return redirect()->back()->with('error', 'Wrong e-mail/password or your account has been banned');
         }
     }
 

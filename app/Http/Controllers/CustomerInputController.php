@@ -29,16 +29,27 @@ class CustomerInputController extends Controller
             ->select('nama_layanan')
             ->where('status', 1)
             ->paginate(8);
-        
+
         $faqs = DB::table('master_faqs')
             ->select('question', 'answer')
             ->get();
 
         // Tetap gunakan query untuk ratings
-        $ratings = DB::table('master_ratings')
-            ->join('users', 'master_ratings.user_id', '=', 'users.id')
-            ->select('master_ratings.*', 'users.name as user_name', 'users.image as image')
+        $ratings = DB::table('service_ins')
+            ->join('users', 'service_ins.user_id', '=', 'users.id') // Join dengan users berdasarkan user_id
+            ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id') // Join dengan master_layanans berdasarkan layanan_id
+            ->select(
+                'service_ins.id',
+                'service_ins.rating',
+                'service_ins.feedback',
+                'service_ins.layanan_id',
+                'master_layanans.nama_layanan as layanan', // Menampilkan nama layanan dari master_layanans
+                'service_ins.user_id',
+                'users.name as user_name', // Menampilkan nama user
+                'users.image as image'
+            )
             ->get();
+
 
         return view('customer.main', compact('ratings', 'layanans', 'user', 'faqs'));
     }
@@ -203,99 +214,101 @@ class CustomerInputController extends Controller
     }
 
     public function index(Request $request)
-{
-    $userId = Auth::user()->id; // Ambil ID pengguna yang sedang login
+    {
+        $userId = Auth::user()->id; // Ambil ID pengguna yang sedang login
 
-    // Menghitung statistik
-    $totalOrders = DB::table('service_ins')
-        ->where('user_id', $userId)
-        ->count();
+        // Menghitung statistik
+        $totalOrders = DB::table('service_ins')
+            ->where('user_id', $userId)
+            ->count();
 
-    $totalWaiting = DB::table('service_ins')
-        ->where('user_id', $userId)
-        ->where('status', 0)
-        ->count();
+        $totalWaiting = DB::table('service_ins')
+            ->where('user_id', $userId)
+            ->where('status', 0)
+            ->count();
 
-    $totalRejected = DB::table('service_ins')
-        ->where('user_id', $userId)
-        ->where('status', 1)
-        ->count();
+        $totalRejected = DB::table('service_ins')
+            ->where('user_id', $userId)
+            ->where('status', 1)
+            ->count();
 
-    $totalAccepted = DB::table('service_ins')
-        ->where('user_id', $userId)
-        ->where('status', 2)
-        ->count();
+        $totalAccepted = DB::table('service_ins')
+            ->where('user_id', $userId)
+            ->where('status', 2)
+            ->count();
 
-    $totalOnProcess = DB::table('service_ins')
-        ->where('user_id', $userId)
-        ->where('status', 3)
-        ->count();
+        $totalOnProcess = DB::table('service_ins')
+            ->where('user_id', $userId)
+            ->where('status', 3)
+            ->count();
 
-    $totalFinished = DB::table('service_ins')
-        ->where('user_id', $userId)
-        ->where('status', 4)
-        ->count();
+        $totalFinished = DB::table('service_ins')
+            ->where('user_id', $userId)
+            ->where('status', 4)
+            ->count();
 
-    // Query data customer dengan filter
-    $query = DB::table('service_ins')
-        ->join('users', 'service_ins.user_id', '=', 'users.id')
-        ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
-        ->leftJoin('service_outs', 'service_ins.id', '=', 'service_outs.service_in_id')
-        ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id')
-        ->select(
-            'service_ins.id',
-            'service_ins.order_id',
-            'users.name',
-            'users.email',
-            'users.telepon',
-            'users.alamat',
-            'master_layanans.nama_layanan',
-            'master_mitras.nama_mitra',
-            'service_ins.tanggal_masuk',
-            'service_ins.deskripsi_masalah',
-            'service_ins.status',
-            'service_ins.status_payment',
-            'service_ins.tanggal_estimasi',
-            'service_ins.perbaikan_pihak_ketiga',
-            'service_ins.harga',
-            'service_ins.catatan',
-            'service_outs.tanggal_keluar',
-            'service_outs.tanggal_diterima',
-            'service_outs.biaya',
-            'service_outs.catatan as catatan_service_out',
-            DB::raw('COALESCE(service_ins.harga, 0) + COALESCE(service_outs.biaya, 0) as total_biaya')
-        )
-        ->where('service_ins.user_id', $userId);
+        // Query data customer dengan filter
+        $query = DB::table('service_ins')
+            ->join('users', 'service_ins.user_id', '=', 'users.id')
+            ->join('master_layanans', 'service_ins.layanan_id', '=', 'master_layanans.id')
+            ->leftJoin('service_outs', 'service_ins.id', '=', 'service_outs.service_in_id')
+            ->leftJoin('master_mitras', 'service_outs.mitra_id', '=', 'master_mitras.id')
+            ->select(
+                'service_ins.id',
+                'service_ins.order_id',
+                'users.name',
+                'users.email',
+                'users.telepon',
+                'users.alamat',
+                'master_layanans.nama_layanan',
+                'master_mitras.nama_mitra',
+                'service_ins.tanggal_masuk',
+                'service_ins.deskripsi_masalah',
+                'service_ins.status',
+                'service_ins.status_payment',
+                'service_ins.tanggal_estimasi',
+                'service_ins.perbaikan_pihak_ketiga',
+                'service_ins.harga',
+                'service_ins.catatan',
+                'service_outs.tanggal_keluar',
+                'service_outs.tanggal_diterima',
+                'service_outs.biaya',
+                'service_outs.catatan as catatan_service_out',
+                DB::raw('COALESCE(service_ins.harga, 0) + COALESCE(service_outs.biaya, 0) as total_biaya')
+            )
+            ->where('service_ins.user_id', $userId);
 
-    // Terapkan filter jika ada
-    if ($request->filled('tanggal_masuk')) {
-        $query->whereDate('service_ins.tanggal_masuk', $request->input('tanggal_masuk'));
+        // Terapkan filter jika ada
+        if ($request->filled('tanggal_masuk')) {
+            $query->whereDate('service_ins.tanggal_masuk', $request->input('tanggal_masuk'));
+        }
+
+        if ($request->filled('order_id')) {
+            $query->where('service_ins.order_id', $request->input('order_id'));
+        }
+
+        if ($request->filled('layanan')) {
+            $query->where('master_layanans.id', $request->input('layanan'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('service_ins.status', $request->input('status'));
+        }
+
+        if ($request->filled('status_payment')) {
+            $query->where('service_ins.status_payment', $request->input('status_payment'));
+        }
+
+        // Urutkan data dan tambahkan pagination
+        $customer = $query->orderBy('service_ins.tanggal_masuk', 'desc')->paginate(5);
+
+        $customermodal = DB::table('service_ins')->where('order_id')->get();
+
+        // Data tambahan untuk filter
+        $layanans = DB::table('master_layanans')->where('status', '!=', 0)->get();
+
+        return view('customer.order.index', compact('customermodal', 'customer', 'totalOrders', 'totalWaiting', 'totalRejected', 'totalAccepted', 'totalOnProcess', 'totalFinished', 'layanans'));
     }
-
-    if ($request->filled('order_id')) {
-        $query->where('service_ins.order_id', $request->input('order_id'));
-    }
-
-    if ($request->filled('layanan')) {
-        $query->where('master_layanans.id', $request->input('layanan'));
-    }
-
-    if ($request->filled('status')) {
-        $query->where('service_ins.status', $request->input('status'));
-    }
-
-    if ($request->filled('status_payment')) {
-        $query->where('service_ins.status_payment', $request->input('status_payment'));
-    }
-
-    // Urutkan data dan tambahkan pagination
-    $customer = $query->orderBy('service_ins.tanggal_masuk', 'desc')->paginate(5);
-
-    // Data tambahan untuk filter
-    $layanans = DB::table('master_layanans')->where('status', '!=', 0)->get();
-
-    return view('customer.order.index', compact('customer', 'totalOrders', 'totalWaiting', 'totalRejected', 'totalAccepted', 'totalOnProcess', 'totalFinished', 'layanans'));
-}
 
     /**
      * Show the form for creating a new resource.
@@ -417,22 +430,6 @@ class CustomerInputController extends Controller
 
 
         return redirect('customer/order')->with('success', 'Order updated successfully!');
-        // $request->validate([
-        //     'layanan_id' => 'required',
-        //     'deskripsi_masalah' => 'required',
-        // ]);
-
-        // // Update data service_ins
-        // DB::table('service_ins')
-        //     ->where('id', $id)
-        //     ->update([
-        //         'layanan_id' => $request->layanan_id,
-        //         'deskripsi_masalah' => $request->deskripsi_masalah,
-
-        //     ]);
-
-        //     return redirect('customer/order')->with('success', 'Order changed');
-        // return redirect('customer/')->with('success', 'Order updated successfully');
     }
 
 

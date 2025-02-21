@@ -17,9 +17,11 @@
           <div class="col-sm-6">
             <h1>Service List</h1>
           </div>
+          @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
           <div class="col-sm-6" style="text-align: right">
             <a href="{{ url('admin/service/add') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Service</a>
           </div>
+          @endif
       </div><!-- /.container-fluid -->
     </section>
 
@@ -70,8 +72,10 @@
                       {{-- <th>Prediksi Harga</th> --}}
                       <th>Status</th>
                       {{-- <th>Created Date</th> --}}
+                      @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
                       <th>Action</th>
                       <th></th>
+                      @endif
                     </tr>
                   </thead>
                   <tbody>
@@ -93,6 +97,7 @@
                           @endif
                         </td>
                         {{-- <td>{{ date('d-m-Y H:i A', strtotime($val->created_at)) }}</td> --}}
+                        @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
                         <td>
                           <a href="{{ url('admin/service/edit/' . $val->id) }}" class="btn btn-xs btn-primary" title="Edit"><i class="fa fa-edit"></i></a>
                           {{-- <a href="{{ url('admin/service/activate/' . $val->id) }}" class="btn btn-xs btn-info" title="Activate"><i class="fa fa-power-off"></i></a>
@@ -104,6 +109,7 @@
                             <a class="delete-confirm btn btn-xs btn-danger" title="Delete"><i class="fa fa-trash"></i></a>
                           </form>
                         </td>
+                        @endif
                       </tr>
                     @endforeach
                   </tbody>

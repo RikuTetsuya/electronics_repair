@@ -141,8 +141,7 @@
     <!-- Brand Logo -->
     <a href="javasript:;" class="brand-link" style="text-align: center">
         {{-- <img src="{{ asset('adminlte/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8"> --}}
-        <span class="brand-text font-weight-light" style="font-weight: bold !important; font-size: 20px;">Electronic
-            Repair</span>
+        <span class="brand-text font-weight-light" style="font-weight: bold !important; font-size: 20px;">VolTech, Inc.</span>
     </a>
 
     <!-- Sidebar -->
@@ -154,8 +153,8 @@
                     alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
-                <a href="#" class="d-block">
+                <a href="{{ url('admin/profile') }}" class="d-block">{{ Auth::user()->name }}</a>
+                <a href="{{ url('admin/profile') }}" class="d-block">
                     Logged as
                     {{ Auth::user()->user_type == 1 ? 'Admin' : (Auth::user()->user_type == 3 ? 'SuperAdmin' : 'Admin') }}
                 </a>
@@ -181,7 +180,7 @@
                 <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
-                @if (Auth::user()->user_type == 1 || Auth::user()->user_type == 3)
+                @if (Auth::user()->user_type == 1 || Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
                     <li class="nav-item">
                         <a href="{{ url('admin/dashboard') }}"
                             class="nav-link @if (Request::segment(2) == 'dashboard') active @endif">
@@ -192,10 +191,10 @@
                             </p>
                         </a>
                     </li>
-                    @if (auth()->user()->user_type == 3)
+                    @if (Auth::user()->user_type == 3 || Auth::user()->user_type == 4)
                         <li class="nav-header">Super Admin Menu</li>
-                        <li class="nav-item menu-close @if (in_array(Request::segment(2), ['admin', 'rating', 'faqs', 'mitra', 'service'])) menu-open @endif">
-                            <a href="#" class="nav-link @if (in_array(Request::segment(2), ['admin', 'rating', 'faqs', 'mitra', 'service'])) active @endif">
+                        <li class="nav-item menu-close @if (in_array(Request::segment(2), ['admin', 'rating', 'faqs', 'mitra', 'service', 'customer'])) menu-open @endif">
+                            <a href="#" class="nav-link @if (in_array(Request::segment(2), ['admin', 'rating', 'faqs', 'mitra', 'service', 'customer'])) active @endif">
                                 <i class="nav-icon fas fa-crown"></i>
                                 <p>
                                     Super Admin Menu
@@ -227,20 +226,20 @@
                                         <p> Employee</p>
                                     </a>
                                 </li>   
+
+                                <li class="nav-item">
+                                    <a href="{{ url('/admin/customer/list') }}"
+                                        class="nav-link @if (Request::segment(2) == 'customer') active @endif">
+                                        <i class="fas fa-user"></i>
+                                        <p> Customer</p>
+                                    </a>
+                                </li>   
                                 
                                 <li class="nav-item">
                                     <a href="{{ url('/admin/rating/list') }}"
                                         class="nav-link @if (Request::segment(2) == 'rating') active @endif">
                                         <i class="far fa-star"></i>
                                         <p> Ratings</p>
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a href="{{ url('/admin/faqs/list') }}"
-                                        class="nav-link @if (Request::segment(2) == 'faqs') active @endif">
-                                        <i class="fas fa-question"></i>
-                                        <p> FaQ</p>
                                     </a>
                                 </li>
                             </ul>
@@ -285,6 +284,14 @@
                                 class="nav-link @if (Request::segment(2) == 'service_out') active @endif">
                                 <i class="fas fa-file-export"></i>
                                 <p> Service Out</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('/admin/faqs/list') }}"
+                                class="nav-link @if (Request::segment(2) == 'faqs') active @endif">
+                                <i class="fas fa-question"></i>
+                                <p> FaQ</p>
                             </a>
                         </li>
                     </li>
@@ -368,6 +375,15 @@
                         <i class="nav-icon fas fa-power-off"></i>
                         <p>
                             Sign Out
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('admin/profile') }}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Profile
                         </p>
                     </a>
                 </li>
